@@ -9,3 +9,5 @@ const Category = mongoose.model(
         }
     })
 )
+
+module.exports.Category; 
