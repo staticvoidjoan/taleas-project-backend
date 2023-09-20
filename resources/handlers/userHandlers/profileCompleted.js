@@ -9,8 +9,8 @@ module.exports.profileComplete = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
     try {
-      const stringJsonBody = event.body;
-      const {education, experience, generalSkills, languages, certifications, links} = JSON.parse(stringJsonBody);
+      const stringJsonBody = JSON.parse(event.body);
+      const {education, experience, generalSkills, languages, certifications, links} = stringJsonBody;
       const email = event.pathParameters.email;
         const user = User.findOne({email: email})
             // Create education, experience, certifications data
