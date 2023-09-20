@@ -2,16 +2,17 @@ const {connectDB} = require('../../config/dbConfig');
 const User = require('../../models/userModel');
 const Education = require('../../models/educationModel');
 const Experience = require('../../models/experienceModel')
-const Certifications = require('../../models/Certifications')
+const Certifications = require('../../models/certeficationsModel')
 
-module.exports.completeProfile = async (event, context) => {
+module.exports.profileComplete = async (event, context) => {
     console.log(JSON.stringify(event));
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
     try {
       const stringJsonBody = event.body;
       const {education, experience, generalSkills, languages, certifications, links} = JSON.parse(stringJsonBody);
-        const user = User.findOne({name : name, lastname : lastname})
+      const email = event.pathParameters.email;
+        const user = User.findOne({email: email})
             // Create education, experience, certifications data
             const educationDocuments = await Education.create(education);
         
@@ -25,9 +26,9 @@ module.exports.completeProfile = async (event, context) => {
               user.education = educationDocuments.map((edu) => edu._id)
               user.experience =  experienceDocuments.map((exp) => exp._id)
               user.certifications = certificationsDocuments.map((cert) => cert._id)
-              user.generalSkills = userData.generalSkills
-              user.languages = userData.languages
-              user.links = userData.links
+              user.generalSkills = generalSkills
+              user.languages = languages
+              user.links = links
         
             // Save the user document
             const updatedUser = await user.save();

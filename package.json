@@ -15,7 +15,9 @@
   },
   "dependencies": {
     "aws-cdk-lib": "2.96.1",
+    "aws-cli": "^0.0.2",
     "constructs": "^10.0.0",
+    "esbuild": "^0.19.3",
     "mongoose": "^7.5.2"
   }
 }

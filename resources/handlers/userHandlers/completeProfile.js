@@ -2,7 +2,7 @@ const {connectDB} = require('../../config/dbConfig');
 const User = require('../../models/userModel');
 const Education = require('../../models/educationModel');
 const Experience = require('../../models/experienceModel');
-const Certifications = require('../../models/certificationsModel');
+const Certifications = require('../../models/certeficationsModel');
 
 module.exports.completeProfile = async (event, context) =>{
     context.callbackWaitsForEmptyEventLoop = false; 
@@ -10,8 +10,8 @@ module.exports.completeProfile = async (event, context) =>{
     await connectDB();
 
     try{
-    const name = event.path.parameters.name;
-    const user = await User.findOne({name: name});
+    const email = event.path.parameters.email;
+    const user = await User.findOne({email: email});
     const {education, experience, generalSkills, languages, certifications, links} = JSON.parse(stringJsonBody);
 
     if (!mongoose.Types.ObjectId.isValid(education)) {
