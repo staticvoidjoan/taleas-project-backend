@@ -1,9 +1,8 @@
 const AWS = require("aws-sdk");
 const mongoose = require("monogoose");
-const User = require("user-model-path");
-const connectDB = require("connectDB-path");
-const Employer = require("./employerModel");
-const MembershipPlan = require("./memberShipModel");
+const User = require("../../models/userModel");
+const connectDB = require("../../config/dbConfig");
+const Employer = require("../../models/employerModel");
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -14,9 +13,9 @@ module.exports.createEmployer = async (event) => {
 
     connectDB();
     console.log("Connected to the database");
-    const { companyName, industry, address, membershipPlan } = data;
+    const { companyName, industry, address } = data;
 
-    if (!companyName || !industry || !membershipPlan) {
+    if (!companyName || !industry) {
       console.log("All fields are required");
       return {
         statusCode: 400,
@@ -50,24 +49,23 @@ module.exports.createEmployer = async (event) => {
       };
     }
 
-    const membershipPlanExists = await MembershipPlan.findOne({
-      membershipPlan,
-    });
-    if (!membershipPlanExists) {
-      console.log("Membership plan does not exists");
-      return {
-        statusCode: 404,
-        body: JSON.stringify({
-          error: "Membership plan does not exists! Please choose another one.",
-        }),
-      };
-    }
+    // const membershipPlanExists = await MembershipPlan.findOne({
+    //   membershipPlan,
+    // });
+    // if (!membershipPlanExists) {
+    //   console.log("Membership plan does not exists");
+    //   return {
+    //     statusCode: 404,
+    //     body: JSON.stringify({
+    //       error: "Membership plan does not exists! Please choose another one.",
+    //     }),
+    //   };
+    // }
 
     const newEmployer = new Employer({
       companyName,
       industry,
       address,
-      membershipPlan,
     });
 
     await newEmployer.save();
