@@ -11,14 +11,14 @@ const Employer = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: true,
+    required: false,
   },
   logo: {
     type: String,
   },
-  membershipPlan: {
+  subscriptionPlan: {
     type: String,
-    required: true
+    required: false,
   }
 });
 

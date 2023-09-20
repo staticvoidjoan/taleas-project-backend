@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const Post = new mongoose.Schema({
   category: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "category"
   },
