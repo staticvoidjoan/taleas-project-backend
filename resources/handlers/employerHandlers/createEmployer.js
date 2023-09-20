@@ -11,7 +11,7 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    connectDB();
+    await connectDB();
     console.log("Connected to the database");
     const { companyName, industry, address } = data;
 
