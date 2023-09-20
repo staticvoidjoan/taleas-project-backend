@@ -1,7 +1,7 @@
 const AWS = require("aws-sdk");
 const mongoose = require("mongoose");
 const User = require("../../models/userModel");
-const connectDB = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 
 module.exports.createEmployer = async (event) => {
