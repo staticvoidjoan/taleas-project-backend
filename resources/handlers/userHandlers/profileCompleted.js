@@ -9,7 +9,6 @@ module.exports.profileComplete = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
-    console.log("Jam ktu");
     const {
       education,
       experience,
@@ -18,8 +17,7 @@ module.exports.profileComplete = async (event, context) => {
       languages,
       links,
     } = JSON.parse(event.body);
-    console.log("Jam ktu 2");
-    console.log(education);
+    
     const email = event.pathParameters.email;
     const user = await User.findOne({ email: email });
     // Create education, experience, certifications data
