@@ -6,13 +6,13 @@ const Employer = require("../../models/employerModel");
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
+  await connectDB();
+  console.log("Connected to the database");
 
   try {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    await connectDB();
-    console.log("Connected to the database");
     const { companyName, industry, address } = data;
 
     if (!companyName || !industry) {
