@@ -13,15 +13,15 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, industry, address } = data;
+    const { companyName, industry, address,  subscriptionPlan } = data;
 
-    if (!companyName || !industry) {
+    if (!companyName || !industry || !subscriptionPlan) {
       console.log("All fields are required");
       return {
         statusCode: 400,
         body: JSON.stringify({
           error:
-            "All fields are required( company name, industry, address and membership plan)",
+            "All fields are required( company name, industry, address and subscription plan)",
         }),
       };
     }
@@ -66,6 +66,7 @@ module.exports.createEmployer = async (event) => {
       companyName,
       industry,
       address,
+      subscriptionPlan,
     });
 
     await newEmployer.save();
