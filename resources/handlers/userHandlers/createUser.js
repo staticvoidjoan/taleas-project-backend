@@ -1,5 +1,5 @@
-const { connectDB } = require("../config/databaseConfig");
-const User = require("../models/userModel");
+const { connectDB } = require("../../config/dbConfig");
+const User = require("../../models/userModel");
 
 module.exports.createUser = async (event, context) => {
   console.log(JSON.stringify(event));
@@ -82,13 +82,14 @@ module.exports.createUser = async (event, context) => {
       email,
     });
     await user.save();
-
+    console.log('User created successfully');
     return {
       statusCode: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Credentials": true,
       },
+      body: JSON.stringify(user)
     };
   } catch (error) {
     console.error("Something went wrong", error);
