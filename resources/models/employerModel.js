@@ -18,7 +18,7 @@ const Employer = new mongoose.Schema({
   },
   membershipPlan: {
     type: String,
-    required: true
+    required: false,
   }
 });
 
