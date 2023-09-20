@@ -38,13 +38,15 @@ module.exports.createEmployer = async (event) => {
       };
     }
 
-    const industryName = /^[A-Za-z\s]+$/;
-    if (!industryName.test(industry)) {
-      console.log("Invalid industry title");
+    const industryEnum = ["IT", "Healthcare", "Finance", "Education", "Manufacturing"];
+    const industryNameRegex = /^[A-Za-z\s]+$/;
+    
+    if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
+      console.log("Invalid industry");
       return {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Industry should only contain letters and symbols",
+          error: "Invalid industry! Industry should only contain letters and symbols, and it must be one of the allowed industries: IT, Healthcare, Finance, Education, Manufacturing",
         }),
       };
     }
