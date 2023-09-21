@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("../../models/userModel");
-const {connectDB} = require("../../config/dbConfig");
+const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 
 module.exports.createEmployer = async (event) => {
@@ -12,7 +12,7 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, industry, address,  subscriptionPlan } = data;
+    const { companyName, industry, address, subscriptionPlan } = data;
 
     if (!companyName || !industry || !subscriptionPlan) {
       console.log("All fields are required");
@@ -37,15 +37,45 @@ module.exports.createEmployer = async (event) => {
       };
     }
 
-    const industryEnum = ["IT", "Healthcare", "Finance", "Education", "Manufacturing"];
+    const industryEnum = [
+      "IT",
+      "Healthcare",
+      "Finance",
+      "Education",
+      "Manufacturing",
+    ];
     const industryNameRegex = /^[A-Za-z\s]+$/;
-    
+
     if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
       console.log("Invalid industry");
       return {
         statusCode: 400,
         body: JSON.stringify({
-          error: "Invalid industry! Industry should only contain letters and symbols, and it must be one of the allowed industries: IT, Healthcare, Finance, Education, Manufacturing",
+          error:
+            "Invalid industry! Industry should only contain letters and symbols, and it must be one of the allowed industries: IT, Healthcare, Finance, Education, Manufacturing",
+        }),
+      };
+    }
+
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailRegex.test(email)) {
+      console.log("Invalid email format");
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error: "Invalid email format! Please provide a valid email address.",
+        }),
+      };
+    }
+
+    const existingEmployer = await Employer.findOne({ email: email });
+    if (existingEmployer) {
+      console.log("Email already exists in the database");
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error:
+            "Email already exists in the database. Please use a different email address.",
         }),
       };
     }
