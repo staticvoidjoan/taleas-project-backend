@@ -1,5 +1,5 @@
-const connectDB = require("./dbConfig");
-const Employer = require("./employerModel");
+const connectDB = require("../../config/dbConfig");
+const Employer = require("../../models/employerModel");
 
 module.exports.deleteEmployer = async (event) => {
   console.log("Lambda fucntion invoked");
