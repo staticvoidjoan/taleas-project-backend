@@ -23,8 +23,9 @@ module.exports.getPostsByCategory = async (event, context) => {
                 }
             }
         }
-
-        const posts = await Post.find({category: category});
+        const posts = await Post.find({category: category})
+        .populate("user")
+        .populate("Employer");
         if (posts.length === 0) {
             return {
                 statusCode: 404, 

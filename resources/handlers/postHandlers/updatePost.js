@@ -22,8 +22,22 @@ module.exports.updatePost = async (event, context) => {
                 }
             }
         }
+        const postExists = await Post.findById(id);
+        if(!postExists) {
+            return {
+                statusCode: 404,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                }, 
+                body: {
+                    status: "error",
+                    error: "Post not found"
+                }
+            }
+        }
         const {category, position, requirements, description} = JSON.parse(event.body);
-        if(!category  || !position || !requirements || !description ) {
+        if(!category  || !position || !requirements ) {
             return {
                 statusCode: 400, 
                 headers : {
@@ -63,9 +77,45 @@ module.exports.updatePost = async (event, context) => {
             }
         }
 
-        const updatedPost = await Post.findByIdAndUpdate(id, {category, creatorId, position, requirements, description}, {new: true});
+        for (let requirement of requirements) {
+            if(!requirement.test('/^[a-zA-Z]+$/')) {
+                return {
+                    statusCode: 400, 
+                    headers : {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    },
+                    body : {
+                        status: "error", 
+                        error: "Please provide a valid requirement"
+                    }
+                }
+            }
+        }
 
+        if(!description.test('/^[a-zA-Z]+$/')) {
+            return {
+                statusCode: 400, 
+                headers : {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                },
+                body : {
+                    status: "error", 
+                    error: "Please provide a valid requirement"
+                }
+            }
+        }
 
+        const updatedPost = await Post.findByIdAndUpdate(
+            id, 
+            {category, 
+             creatorId, 
+             position, 
+             requirements, 
+             description
+            }, 
+             {new: true});
 
         return {
             statusCode: 200, 

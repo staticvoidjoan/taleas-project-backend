@@ -22,7 +22,9 @@ module.exports.getPostsByCreatorId = async (event, context) => {
             }
         }
 
-        const posts = await Post.find({creatorId: creatorId});
+        const posts = await Post.find({creatorId: creatorId})
+        .populate("user")
+        .populate("category");
         if(posts.length === 0) {
             return {
                 statusCode: 404, 
