@@ -7,7 +7,7 @@ module.exports.likePost = async (event, context) => {
   try {
     await connectDB();
 
-    const email = event.pathParameters.email;
+    const email = event.queryStringParameters.email;
     const user = await User.findOne({ email: email });
 
     const postId = event.pathParameters.id;

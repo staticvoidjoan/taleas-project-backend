@@ -42,18 +42,6 @@ module.exports.createExperience = async (event, context) => {
         };
       }
 
-      // Validate start date and end date fields
-      if (!exp.startDate) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({ error: "Start date is required." }),
-        };
-      }
-
       if (!dateRegex.test(startDate) || (exp.endDate && !dateRegex.test(endDate))) {
         return {
           statusCode: 400,
@@ -64,18 +52,6 @@ module.exports.createExperience = async (event, context) => {
           body: JSON.stringify({
             error: "Start date and end date must be in YYYY-MM-DD format.",
           }),
-        };
-      }
-
-      // Validate description field
-      if (!description) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({ error: "Description is required." }),
         };
       }
 
