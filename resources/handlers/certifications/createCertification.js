@@ -1,17 +1,39 @@
 const { connectDB } = require("../../config/dbConfig");
 const User = require("../../models/userModel");
-const Education = require("../../models/educationModel");
+const Certifications = require("../../models/experienceModel");
 
-module.exports.createEducation = async (event, context) => {
+module.exports.createCertification = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
     const userEmail = event.pathParameters.email;
-    const { institution, degree, startDate, endDate, description } = JSON.parse(
-      event.body
-    );
 
-    if (!institution || !degree || !startDate) {
+    const { title, organization, issueDate, expirationDate, description } =
+      JSON.parse(event.body);
+
+    // Regular expressions for validation
+    const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    // Validate title, issuingOrganization, and issueDate
+    if (!title || !organization || issueDate) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({
+          error: "Title, issuing organization and issue date are required.",
+        }),
+      };
+    }
+
+    if (
+      !textRegex.test(title) ||
+      !textRegex.test(organization) ||
+      !textRegex.test(description)
+    ) {
       return {
         statusCode: 400,
         headers: {
@@ -20,16 +42,27 @@ module.exports.createEducation = async (event, context) => {
         },
         body: JSON.stringify({
           error:
-            "Institution name, degree and start date are required.",
+            "Title, issuing organization, and description must be alphanumeric.",
         }),
       };
     }
 
-    // Regular expressions for validation
-    const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    // Validate issueDate and expirationDate fields
+    if (!issueDate) {
+      return {
+        statusCode: 400,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({ error: "Issue date is required." }),
+      };
+    }
 
-    if (!textRegex.test(institution)) {
+    if (
+      !dateRegex.test(issueDate) ||
+      (expirationDate && !dateRegex.test(expirationDate))
+    ) {
       return {
         statusCode: 400,
         headers: {
@@ -37,54 +70,20 @@ module.exports.createEducation = async (event, context) => {
           "Access-Control-Allow-Credentials": true,
         },
         body: JSON.stringify({
-          error: "Institution name must be alphanumeric.",
+          error: "Issue date and expiration date format is not correct",
         }),
       };
     }
 
-    if (!textRegex.test(degree)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({ error: "Degree must be alphanumeric." }),
-      };
-    }
-
-    if (!textRegex.test(description)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({ error: "Description must be alphanumeric." }),
-      };
-    }
-
-    if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          error: "Start date and end date must be in YYYY-MM-DD format.",
-        }),
-      };
-    }
-    const newEducation = new Education({
-      institution,
-      degree,
-      startDate,
-      endDate,
+    const certification = new Certifications({
+      title,
+      organization,
+      issueDate,
+      expirationDate,
       description,
     });
 
-    const savedEducation = await newEducation.save();
+    const createdCertification = await certification.save();
     const updateUser = await User.findOneAndUpdate(
       { email: userEmail },
       { $push: { education: savedEducation._id } }
@@ -95,7 +94,11 @@ module.exports.createEducation = async (event, context) => {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Credentials": true,
       },
-      body: JSON.stringify({ savedEducation, updateUser }),
+      body: JSON.stringify({
+        status: "success",
+        createdCertification,
+        updateUser,
+      }),
     };
   } catch (error) {
     console.error("Something went wrong", error);
@@ -107,7 +110,7 @@ module.exports.createEducation = async (event, context) => {
       },
       body: JSON.stringify({
         status: "error",
-        message: "An error occurred creating education",
+        message: "An error while creating certifications",
       }),
     };
   }
