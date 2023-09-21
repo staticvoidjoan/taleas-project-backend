@@ -1,9 +1,13 @@
 const mongoose = require("mongoose")
 const Education = new mongoose.Schema({
-    title: {
+    institution: {
         type: String, 
         required: true,
-    }, 
+    },
+    degree: {
+        type: String,
+        required: true,
+    },
     startDate: {
         type: Date,
         required: true, 
