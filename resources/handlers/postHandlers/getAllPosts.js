@@ -6,7 +6,11 @@ module.exports.getAllPosts = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
     try {
-            const posts = await Post.find();
+            const posts = await Post.find()
+            .populate("user")
+            .populate("Employer")
+            .populate("category");
+            
             if (posts.length === 0) {
                 return {
                     statusCode: 404, 

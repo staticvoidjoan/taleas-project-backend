@@ -20,7 +20,10 @@ module.exports.getPostById = async (event, context) => {
                 }
             }
         }
-        const post = await Post.findById(id).populate("likedBy"); 
+        const post = await Post.findById(id)
+        .populate("user")
+        .populate("Employer")
+        .populate("category");
         return {
             statusCode: 200, 
             headers : {
