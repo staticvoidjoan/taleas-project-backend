@@ -6,7 +6,7 @@ module.exports.createExperience = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
-    const userEmail = event.pathParameters.email;
+    const userId = event.pathParameters.id;
     const { empolyer, position, startDate, endDate, description } = JSON.parse(
       event.body
     );
@@ -76,7 +76,7 @@ module.exports.createExperience = async (event, context) => {
 
     const savedExperience = await experience.save();
     const updateUser = await User.findOneAndUpdate(
-      { email: userEmail },
+      { _id: userId },
       { $push: { experience: savedExperience._id } }
     );
     return {
