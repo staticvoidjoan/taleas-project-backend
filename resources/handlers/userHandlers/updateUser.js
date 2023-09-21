@@ -107,6 +107,36 @@ module.exports.updateUser = async (event, context) => {
             };
         }
     }
+
+    generalSkills.map((skill) => {
+      if (!textRegex.test(skill)) {
+        return {
+          statusCode: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true,
+          },
+          body: JSON.stringify({
+            error: "General skills must be alphanumeric.",
+          }),
+        };
+      }
+    });
+
+    languages.map((language) => {
+      if (!textRegex.test(language)) {
+        return {
+          statusCode: 400,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true,
+          },
+          body: JSON.stringify({
+            error: "Languages must be alphanumeric.",
+          }),
+        };
+      }
+    });
     
     const linksRegEx = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
     links.map((link) => {

@@ -3,15 +3,19 @@ const mongoose = require("mongoose");
 const Certifications = new mongoose.Schema({
     title: {
         type: String,
-        required: true, 
-    }, 
-    startDate: {
-        type: Date,
-        required: true, 
+        required: true,
     },
-    endDate: {
+    organization: {
+        type: String,
+        required: true,
+    },
+    issueDate: {
         type: Date,
-        required: false, 
+        required: true,
+    },
+    expirationDate: {
+        type: Date,
+        required: false,
     },
     description: {
         type: String,
