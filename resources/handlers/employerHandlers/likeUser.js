@@ -4,36 +4,37 @@ const User = require("../../models/userModel");
 const Post = require("../../models/postModel");
 
 module.exports.likeUser = async (event, context) => {
-  console.log("Lmabda function invoked");
+  console.log("Lambda function invoked");
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
     console.log("Connected to the database");
 
-    const employerId = event.pathParameters.employerId;
+    const employerId = event.pathParameters.id;
     const employer = await Employer.findById(employerId);
     console.log("Employer Id", employer);
 
-    const userEmail = event.pathParameters.userEmail;
-    const user = await User.findOne({ email: userEmail });
-    console.log("User", user);
-
-    const postId = event.pathParameters.postId;
+    const postId = event.queryStringParameters.postId;
     const post = await Post.findById(postId);
     console.log("Post", post);
 
-    if (!user || !post || !employer) {
+    if (!post) {
       return {
         statusCode: 404,
         body: JSON.stringify({
           status: "error",
-          message: "User, Post or Employer not found",
+          message: "Post not found",
         }),
       };
     }
 
-    if (post.likedBy.includes(user._id)) {
-      await post.recLikes.push(employer);
+    // Get the list of users who have liked the post
+    const usersWhoLikedPost = await User.find({ _id: { $in: post.likedBy } });
+
+    // Check if the employer is not already in the recLikes array
+    if (!post.recLikes.includes(employer._id)) {
+      // Add the employer's ID to the recLikes array
+      post.recLikes.push(employer._id);
       await post.save();
     }
 
@@ -48,6 +49,7 @@ module.exports.likeUser = async (event, context) => {
       body: JSON.stringify({
         status: "success",
         message: "User liked successfully",
+        usersWhoLikedPost,
       }),
     };
   } catch (error) {

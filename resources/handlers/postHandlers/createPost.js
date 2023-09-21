@@ -7,8 +7,8 @@ module.exports.createPost = async (event, context) => {
 
     await connectDB();
     try{
-
-        const {category, creatorId, position , requirements, description} = JSON.parse(event.body);
+        const {creatorId} = event.pathParameters; 
+        const {category, position , requirements, description} = JSON.parse(event.body);
         if(!category || !creatorId || !position || !requirements || !description ) {
             return {
                 statusCode: 400, 
@@ -63,6 +63,34 @@ module.exports.createPost = async (event, context) => {
                 }
             }
         }
+        if(!description.test('/^[a-zA-Z]+$/')) {
+            return {
+                statusCode: 400, 
+                headers : {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                },
+                body : {
+                    status: "error", 
+                    error: "Please provide a valid requirement"
+                }
+            }
+        }
+
+        if(!position.test('/^[a-zA-Z]+$/')) {
+            return {
+                statusCode: 400, 
+                headers : {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                },
+                body : {
+                    status: "error", 
+                    error: "Please provide a valid requirement"
+                }
+            }
+        }
+        
         
         const newPost = new Post({
             category,

@@ -1,5 +1,6 @@
 const connectDB = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const History = require("../../models/historyModel");
 
 
 module.exports.getPostsByCategory = async (event, context) => {
@@ -8,7 +9,7 @@ module.exports.getPostsByCategory = async (event, context) => {
 
     try {
 
-        const { category } = event.pathParameters: 
+        const { category } = event.pathParameters; 
 
         if(!mongoose.Types.ObjectId.isValid(category)) {
             return {
@@ -23,8 +24,16 @@ module.exports.getPostsByCategory = async (event, context) => {
                 }
             }
         }
-
-        const posts = await Post.find({category: category});
+        const userHistory = History.findOne({user: id});
+        const likedPostIds = userHistory.likedPosts;
+        const dislikedPostIds = userHistory.dislikedPosts;
+        //find post where category is equal to category id and id of the post is not in the liked or disliked posts from the user history
+        const posts = await Post.find(
+            {category: category, 
+            _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
+        })
+        .populate("user")
+        .populate("Employer");
         if (posts.length === 0) {
             return {
                 statusCode: 404, 

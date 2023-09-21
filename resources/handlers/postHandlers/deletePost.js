@@ -6,7 +6,6 @@ module.exports.deletePost = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     const {id} = event.pathParameters;
     await connectDB();
-
     try{
 
         const post = await Post.findByIdAndDelete(id);

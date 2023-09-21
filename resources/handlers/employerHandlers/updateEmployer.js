@@ -13,7 +13,7 @@ module.exports.updateEmployer = async (event) => {
 
     const employerId = event.pathParameters.id;
     const employer = await Employer.findOne({ employerId: employerId });
-    console.log("Employer Id", employerId);
+    console.log("Employer email", employerId);
 
     if (!employer) {
       console.log("Employer not found");
@@ -34,7 +34,7 @@ module.exports.updateEmployer = async (event) => {
       };
     }
 
-    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/; 
+    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
     if (!addressRegex.test(address)) {
       console.log("Invalid address format");
@@ -46,6 +46,14 @@ module.exports.updateEmployer = async (event) => {
         }),
       };
     }
+
+    employer.companyName = companyName;
+    employer.address = address;
+    employer.industry = industry;
+
+    await employer.save();
+
+    console.log("Employer updated successfully", employer);
   } catch (error) {
     console.log("An error happened", error);
     return {

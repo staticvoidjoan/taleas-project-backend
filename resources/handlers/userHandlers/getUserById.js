@@ -9,8 +9,8 @@ module.exports.getUser = async (event, context) => {
   try {
     await connectDB();
 
-    const email = event.pathParameters.email;
-    const user = await User.findOne({ email: email })
+    const userId = event.pathParameters.id;
+    const user = await User.findOne({ _id: userId })
       .select("-__v")
       .populate("education")
       .populate("experience")

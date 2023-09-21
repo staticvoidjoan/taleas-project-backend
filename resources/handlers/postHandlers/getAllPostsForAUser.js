@@ -1,16 +1,20 @@
 const connectDB = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const History = require("../../models/historyModel");
 
-
-module.exports.getAllPosts = async (event, context) => {
+module.exports.getAllPostsForAUser = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
+    const {id} = event.pathParameters;
     try {
-            const posts = await Post.find()
-            .populate("user")
-            .populate("Employer")
-            .populate("category");
-            
+
+            const userHistory = History.findOne({user: id});
+            const likedPostIds = userHistory.likedPosts;
+            const dislikedPostIds = userHistory.dislikedPosts;
+
+            // Query for new posts that the user hasn't interacted with
+            const posts = await Post.find({_id: { $nin: [...likedPostIds, ...dislikedPostIds] }});
+
             if (posts.length === 0) {
                 return {
                     statusCode: 404, 

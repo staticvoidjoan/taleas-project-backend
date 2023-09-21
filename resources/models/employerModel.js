@@ -11,7 +11,7 @@ const Employer = new mongoose.Schema({
   },
   address: {
     type: String,
-    required: false,
+    required: true,
   },
   logo: {
     type: String,
