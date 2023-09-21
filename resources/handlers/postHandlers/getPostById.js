@@ -1,7 +1,6 @@
 const connectDB = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 
-
 module.exports.getPostById = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
@@ -21,7 +20,7 @@ module.exports.getPostById = async (event, context) => {
                 }
             }
         }
-        const post = await Post.findById(id);
+        const post = await Post.findById(id).populate("likedBy"); 
         return {
             statusCode: 200, 
             headers : {
