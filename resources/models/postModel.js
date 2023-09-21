@@ -13,12 +13,12 @@ const Post = new mongoose.Schema({
   },
   likedBy: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: false,
     ref: "users"
   }],
   recLikes: [{
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    required: false,
     ref: "users"
   }],
   position: {
