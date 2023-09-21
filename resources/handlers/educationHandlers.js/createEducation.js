@@ -6,7 +6,7 @@ module.exports.createEducation = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
-    const userEmail = event.pathParameters.email;
+    const userId = event.pathParameters.id;
     const { institution, degree, startDate, endDate, description } = JSON.parse(
       event.body
     );
@@ -86,7 +86,7 @@ module.exports.createEducation = async (event, context) => {
 
     const savedEducation = await newEducation.save();
     const updateUser = await User.findOneAndUpdate(
-      { email: userEmail },
+      { _id: userId },
       { $push: { education: savedEducation._id } }
     );
     return {

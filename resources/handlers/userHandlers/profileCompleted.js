@@ -18,8 +18,8 @@ module.exports.profileComplete = async (event, context) => {
       links,
     } = JSON.parse(event.body);
 
-    const email = event.pathParameters.email;
-    const user = await User.findOne({ email: email });
+    const userId = event.pathParameters.id;
+    const user = await User.findOne({ _id: userId });
 
     // Regular expressions for validation
     const textRegex = /^[a-zA-Z0-9\s,'-]*$/;

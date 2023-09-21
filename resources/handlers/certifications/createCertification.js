@@ -6,7 +6,7 @@ module.exports.createCertification = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
-    const userEmail = event.pathParameters.email;
+    const userId = event.pathParameters.id;
 
     const { title, organization, issueDate, expirationDate, description } =
       JSON.parse(event.body);
@@ -85,7 +85,7 @@ module.exports.createCertification = async (event, context) => {
 
     const createdCertification = await certification.save();
     const updateUser = await User.findOneAndUpdate(
-      { email: userEmail },
+      { _id: userId },
       { $push: { education: savedEducation._id } }
     );
     return {

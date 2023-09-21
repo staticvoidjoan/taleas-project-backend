@@ -14,7 +14,7 @@ module.exports.likeUser = async (event, context) => {
     const employer = await Employer.findById(employerId);
     console.log("Employer Id", employer);
 
-    const postId = event.pathParameters.postId;
+    const postId = event.queryStringParameters.postId;
     const post = await Post.findById(postId);
     console.log("Post", post);
 
