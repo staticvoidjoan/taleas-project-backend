@@ -8,7 +8,7 @@ module.exports.getPostsByCategory = async (event, context) => {
 
     try {
 
-        const { category } = event.pathParameters: 
+        const { category } = event.pathParameters; 
 
         if(!mongoose.Types.ObjectId.isValid(category)) {
             return {
