@@ -33,8 +33,9 @@ module.exports.getPostsByCategory = async (event, context) => {
             {category: category, 
             _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
         })
-        .populate("users")
-        .populate("Employer");
+        .populate("likedBy")
+        .populate("recLikes")
+        .populate("creatorId");
         if (posts.length === 0) {
             return {
                 statusCode: 404, 

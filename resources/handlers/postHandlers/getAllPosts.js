@@ -7,9 +7,10 @@ module.exports.getAllPosts = async (event, context) => {
     await connectDB();
     try {
             const posts = await Post.find()
-            .populate("users")
-            .populate("Employer")
-            .populate("category");
+            .populate("likedBy")
+            .populate("recLikes")
+            .populate("category")
+            .populate("creatorId");
             
             if (posts.length === 0) {
                 return {

@@ -14,9 +14,10 @@ module.exports.getAllPostsForAUser = async (event, context) => {
 
             // Query for new posts that the user hasn't interacted with
             const posts = await Post.find({_id: { $nin: [...likedPostIds, ...dislikedPostIds] }})
-            .populate("users")
-            .populate("Employer")
-            .populate("category");
+            .populate("likedBy")
+            .populate("recLikes")
+            .populate("category")
+            .populate("creatorId");
 
             if (posts.length === 0) {
                 return {
