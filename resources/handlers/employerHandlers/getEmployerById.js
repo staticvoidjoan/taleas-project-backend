@@ -10,9 +10,7 @@ module.exports.getEmployerById = async (event) => {
     console.log("Connected to the database");
 
     const employerId = event.pathParameters.id;
-    const employer = await Employer.findOne({ employerId: employerId })
-      .select("-__v")
-      .populate("posts");
+    const employer = await Employer.findOne({ employerId: employerId }).select("-__v");
 
     if (!employer) {
       console.log("Employer not found");
@@ -21,6 +19,10 @@ module.exports.getEmployerById = async (event) => {
         body: JSON.stringify({ error: "Employer not found" }),
       };
     }
+
+    const posts = await Post.find({ creatorId: employerId });
+
+    employer.posts = posts;
 
     return {
       statusCode: 200,
@@ -37,7 +39,7 @@ module.exports.getEmployerById = async (event) => {
     return {
       statusCode: 500,
       body: JSON.stringify({
-        error: "An error occurred while retreiving the employer",
+        error: "An error occurred while retrieving the employer",
       }),
     };
   }
