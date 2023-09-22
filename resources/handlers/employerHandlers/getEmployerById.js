@@ -10,7 +10,7 @@ module.exports.getEmployerById = async (event) => {
     console.log("Connected to the database");
 
     const employerId = event.pathParameters.id;
-    const employer = await Employer.findOne({ employerId: employerId }).select("-__v");
+    const employer = await Employer.findOne({ _id: employerId }).select("-__v");
 
     if (!employer) {
       console.log("Employer not found");
