@@ -26,7 +26,7 @@ module.exports.profileComplete = async (event, context) => {
 
     const bucketName = "users";
       const invokeParams = {
-        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
+        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs', 
         Payload: JSON.stringify({ profilePhoto , bucketName }),
       };
       const invokeResult = await lambda.invoke(invokeParams).promise();

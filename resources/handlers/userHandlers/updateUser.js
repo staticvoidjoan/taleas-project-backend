@@ -53,7 +53,7 @@ module.exports.updateUser = async (event, context) => {
     }
       console.log("Invoke function")
       const invokeParams = {
-        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
+        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs', 
         Payload: JSON.stringify({ profilePhoto , bucketName }),
       };
       const invokeResult = await lambda.invoke(invokeParams).promise();
@@ -61,6 +61,7 @@ module.exports.updateUser = async (event, context) => {
       console.log(uploadResult);
 
       //Validations
+      const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
       const nameRegEx = /^[a-zA-Z]{2,30}$/;
     if (!nameRegEx.test(name)) {
       console.log("Name contains invalid characters");

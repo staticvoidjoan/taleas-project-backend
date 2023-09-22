@@ -11,7 +11,7 @@ module.exports.uploadImages = async (event) => {
     console.log('Image parameters', JSON.stringify(event));
     const BUCKET_NAME = event.bucketName;
 
-    const img = event.img; 
+    const img = event.profilePhoto; 
     const buffer = Buffer.from(img.split(',')[1], 'base64');
 
     const params = {
