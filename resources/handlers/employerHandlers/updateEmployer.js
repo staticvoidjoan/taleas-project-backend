@@ -1,5 +1,6 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
+const lambda = new AWS.Lambda();
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -8,11 +9,13 @@ module.exports.updateEmployer = async (event) => {
     await connectDB();
     console.log("Connected to the database");
 
-    const { companyName, address, industry } = JSON.parse(event.body);
+    const { companyName, address, industry, profilePhoto } = JSON.parse(
+      event.body
+    );
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
-    const employer = await Employer.findOne({ employerId: employerId });
+    const employer = await Employer.findOne({ _id: employerId });
     console.log("Employer email", employerId);
 
     if (!employer) {
@@ -22,6 +25,30 @@ module.exports.updateEmployer = async (event) => {
         body: JSON.stringify({ error: "Employer not found" }),
       };
     }
+
+    const bucketName = "employers";
+    if (employer.profilePhoto) {
+      const deleteParams = {
+        Bucket: bucketName,
+        Key: employer.profilePhoto,
+      };
+      try {
+        await s3.deleteObject(deleteParams).promise();
+      } catch (error) {
+        console.log(
+          "An error occurred while deleting the old image from s3",
+          error
+        );
+      }
+    }
+
+    const invokeParams = {
+      FunctionName: "",
+      Payload: JSON.stringify({ profilePhoto, bucketName }),
+    };
+    const invokeResult = await lambda.invoke(invokeParams).promise();
+    const uploadResult = JSON.parse(invokeResult.Payload);
+    console.log(uploadResult);
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(companyName)) {
       console.log("Invalid name format");
@@ -50,6 +77,7 @@ module.exports.updateEmployer = async (event) => {
     employer.companyName = companyName;
     employer.address = address;
     employer.industry = industry;
+    employer.profilePhoto = profilePhoto;
 
     await employer.save();
 
