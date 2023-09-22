@@ -1,7 +1,7 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
-const AWS = require('aws-sdk');
-const lambda = new AWS.Lambda();
+// const AWS = require('aws-sdk');
+// const lambda = new AWS.Lambda();
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
