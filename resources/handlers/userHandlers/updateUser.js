@@ -3,6 +3,7 @@ const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
 const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
+const lambda = new AWS.Lambda();
 
 module.exports.updateUser = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -17,6 +18,7 @@ module.exports.updateUser = async (event, context) => {
         generalSkills,
         languages,
         links,
+        profilePhoto,
       } = JSON.parse(event.body);
       
       const userId = event.pathParameters.id;
@@ -33,6 +35,29 @@ module.exports.updateUser = async (event, context) => {
             body: JSON.stringify({status: "error", error: "User not found" }),
           };
       }
+
+      const bucketName = "users";
+      //Delete previous profile photo
+      if (user.profilePhoto) {
+        const deleteParams = {
+            Bucket: bucketName,
+            Key: user.profilePhoto
+        };
+        try {
+            await s3.deleteObject(deleteParams).promise();
+        } catch (err) {
+            console.log('Error deleting old profile photo from S3', err);
+            throw err;
+        }
+    }
+
+      const invokeParams = {
+        FunctionName: '', 
+        Payload: JSON.stringify({ profilePhoto , bucketName }),
+      };
+      const invokeResult = await lambda.invoke(invokeParams).promise();
+      const uploadResult = JSON.parse(invokeResult.Payload);
+      console.log(uploadResult);
 
       //Validations
       const nameRegEx = /^[a-zA-Z]{2,30}$/;
@@ -161,6 +186,7 @@ module.exports.updateUser = async (event, context) => {
     user.generalSkills = generalSkills;
     user.languages = languages;
     user.links = links;
+    user.profilePhoto = uploadResult.body;
 
     // Save the updated user document
     const updatedUser = await user.save();
