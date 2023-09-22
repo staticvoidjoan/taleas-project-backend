@@ -16,10 +16,12 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
-                    status: "error", 
-                    error: "Please provide a valid id"
-                }
+                body : JSON.stringify(
+                    {
+                        status: "error", 
+                        error: "Please provide a valid id"
+                    }
+                )
             }
         }
         const postExists = await Post.findById(id);
@@ -30,10 +32,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 }, 
-                body: {
+                body:JSON.stringify( {
                     status: "error",
                     error: "Post not found"
-                }
+                })
             }
         }
         const {category, position, requirements, description} = JSON.parse(event.body);
@@ -44,10 +46,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify( {
                     status: "error", 
                     error: "Please provide all the required fields"
-                }
+                })
             }
         }
         if(!mongoose.Types.ObjectId.isValid(creatorId)) {
@@ -57,10 +59,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify( {
                     status: "error", 
                     error: "Please provide a valid creator id"
-                }
+                })
             }
         }
         if(!mongoose.Types.ObjectId.isValid(category)) {
@@ -70,10 +72,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid category id"
-                }
+                })
             }
         }
         const regex = /^[a-zA-Z]+$/;
@@ -85,10 +87,10 @@ module.exports.updatePost = async (event, context) => {
                         "Access-Control-Allow-Origin": "*",
                         "Access-Control-Allow-Credentials": true,
                     },
-                    body : {
+                    body : JSON.stringify({
                         status: "error", 
                         error: "Please provide a valid requirement"
-                    }
+                    })
                 }
             }
         }
