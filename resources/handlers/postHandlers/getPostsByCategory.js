@@ -33,7 +33,7 @@ module.exports.getPostsByCategory = async (event, context) => {
             {category: category, 
             _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
         })
-        .populate("user")
+        .populate("users")
         .populate("Employer");
         if (posts.length === 0) {
             return {

@@ -7,7 +7,7 @@ module.exports.getAllPosts = async (event, context) => {
     await connectDB();
     try {
             const posts = await Post.find()
-            .populate("user")
+            .populate("users")
             .populate("Employer")
             .populate("category");
             

@@ -13,7 +13,10 @@ module.exports.getAllPostsForAUser = async (event, context) => {
             const dislikedPostIds = userHistory.dislikedPosts;
 
             // Query for new posts that the user hasn't interacted with
-            const posts = await Post.find({_id: { $nin: [...likedPostIds, ...dislikedPostIds] }});
+            const posts = await Post.find({_id: { $nin: [...likedPostIds, ...dislikedPostIds] }})
+            .populate("users")
+            .populate("Employer")
+            .populate("category");
 
             if (posts.length === 0) {
                 return {
