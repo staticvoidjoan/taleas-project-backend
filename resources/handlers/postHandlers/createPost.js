@@ -48,8 +48,9 @@ module.exports.createPost = async (event, context) => {
                 }
             }
         }
+        const regex = /^[a-zA-Z]+$/;
         for (let requirement of requirements) {
-            if(!requirement.test('/^[a-zA-Z]+$/')) {
+            if(!regex.test(requirement)) {
                 return {
                     statusCode: 400, 
                     headers : {
@@ -63,7 +64,7 @@ module.exports.createPost = async (event, context) => {
                 }
             }
         }
-        if(!description.test('/^[a-zA-Z]+$/')) {
+        if(!regex.test(description)) {
             return {
                 statusCode: 400, 
                 headers : {
@@ -77,7 +78,7 @@ module.exports.createPost = async (event, context) => {
             }
         }
 
-        if(!position.test('/^[a-zA-Z]+$/')) {
+        if(!regex.test(position)) {
             return {
                 statusCode: 400, 
                 headers : {

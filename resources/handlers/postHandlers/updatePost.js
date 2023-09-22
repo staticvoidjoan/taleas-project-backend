@@ -1,4 +1,3 @@
-const { default: mongoose } = require("mongoose");
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const mongoose = require("mongoose");
@@ -77,9 +76,9 @@ module.exports.updatePost = async (event, context) => {
                 }
             }
         }
-
+        const regex = /^[a-zA-Z]+$/;
         for (let requirement of requirements) {
-            if(!requirement.test('/^[a-zA-Z]+$/')) {
+            if(!regex.test(requirement)) {
                 return {
                     statusCode: 400, 
                     headers : {
@@ -94,7 +93,7 @@ module.exports.updatePost = async (event, context) => {
             }
         }
 
-        if(!description.test('/^[a-zA-Z]+$/')) {
+        if(!regex.test(description)) {
             return {
                 statusCode: 400, 
                 headers : {
@@ -104,6 +103,19 @@ module.exports.updatePost = async (event, context) => {
                 body : {
                     status: "error", 
                     error: "Please provide a valid requirement"
+                }
+            }
+        }
+        if(!regex.test(position)) {
+            return {
+                statusCode: 400,
+                headers: {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Credentials": true,
+                },
+                body: {
+                    status: "error",
+                    error: "Please provide a valid position"
                 }
             }
         }
