@@ -39,7 +39,7 @@ module.exports.updateUser = async (event, context) => {
 
       const bucketName = "users";
       //Delete previous profile photo
-      if (user.profilePhoto) {
+      if (user.profilePhoto !== undefined) {
         const deleteParams = {
             Bucket: bucketName,
             Key: user.profilePhoto
@@ -53,7 +53,7 @@ module.exports.updateUser = async (event, context) => {
     }
 
       const invokeParams = {
-        FunctionName: '', 
+        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
         Payload: JSON.stringify({ profilePhoto , bucketName }),
       };
       const invokeResult = await lambda.invoke(invokeParams).promise();
