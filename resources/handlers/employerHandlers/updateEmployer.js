@@ -1,7 +1,7 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
-const lambda = new AWS.Lambda();
 const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -10,9 +10,7 @@ module.exports.updateEmployer = async (event) => {
     await connectDB();
     console.log("Connected to the database");
 
-    const { companyName, address, industry, profilePhoto } = JSON.parse(
-      event.body
-    );
+    const { companyName, address, industry, profilePhoto } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
