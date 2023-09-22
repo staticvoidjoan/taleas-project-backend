@@ -1,7 +1,7 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
-// const AWS = require('aws-sdk');
-// const lambda = new AWS.Lambda();
+const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -42,7 +42,7 @@ module.exports.updateEmployer = async (event) => {
     }
 
     const invokeParams = {
-      FunctionName: "",
+      FunctionName: '', 
       Payload: JSON.stringify({ profilePhoto, bucketName }),
     };
     const invokeResult = await lambda.invoke(invokeParams).promise();
@@ -78,9 +78,20 @@ module.exports.updateEmployer = async (event) => {
     employer.industry = industry;
     employer.profilePhoto = profilePhoto;
 
-    await employer.save();
+    const updatedEmployer = await employer.save();
 
-    console.log("Employer updated successfully", employer);
+    console.log("Employer updated successfully", updatedEmployer);
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+        "Access-Control-Allow-Credentials": true,
+      },
+      body: JSON.stringify(updatedEmployer),
+    };
+
   } catch (error) {
     console.log("An error happened", error);
     return {
