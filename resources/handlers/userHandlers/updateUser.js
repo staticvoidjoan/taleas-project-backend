@@ -51,7 +51,7 @@ module.exports.updateUser = async (event, context) => {
             throw err;
         }
     }
-
+      console.log("Invoke function")
       const invokeParams = {
         FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
         Payload: JSON.stringify({ profilePhoto , bucketName }),
