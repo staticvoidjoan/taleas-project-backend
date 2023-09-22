@@ -5,10 +5,10 @@ const History = require("../../models/historyModel");
 module.exports.getAllPostsForAUser = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
-    const {id} = event.pathParameters;
+    const {userId} = event.pathParameters;
     try {
 
-            const userHistory = History.findOne({user: id});
+            const userHistory = History.findOne({user: userId});
             const likedPostIds = userHistory.likedPosts;
             const dislikedPostIds = userHistory.dislikedPosts;
 
