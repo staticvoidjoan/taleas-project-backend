@@ -1,5 +1,6 @@
 const connectDB = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const mongoose = require("mongoose");
 
 
 module.exports.getPostsByCreatorId = async (event, context) => {

@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const mongoose = require("mongoose");
 
 
 module.exports.updatePost = async (event, context) => {

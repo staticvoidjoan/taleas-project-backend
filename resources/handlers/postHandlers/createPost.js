@@ -1,6 +1,6 @@
 const {connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
-
+const mongoose = require("mongoose");
 
 module.exports.createPost = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
