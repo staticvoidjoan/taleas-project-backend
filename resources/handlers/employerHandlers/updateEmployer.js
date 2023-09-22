@@ -42,7 +42,7 @@ module.exports.updateEmployer = async (event) => {
     }
 
     const invokeParams = {
-      FunctionName: '', 
+      FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
       Payload: JSON.stringify({ profilePhoto, bucketName }),
     };
     const invokeResult = await lambda.invoke(invokeParams).promise();
