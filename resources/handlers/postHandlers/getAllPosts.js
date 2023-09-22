@@ -18,10 +18,10 @@ module.exports.getAllPosts = async (event, context) => {
                         "Access-Control-Allow-Origin": "*",
                         "Access-Control-Allow-Credentials": true,
                     },
-                    body : {
+                    body : JSON.stringify({
                         status: "error", 
                         error: "No posts found"
-                    }
+                    })
                 }
             }
     

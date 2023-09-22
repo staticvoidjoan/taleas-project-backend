@@ -19,10 +19,10 @@ module.exports.getPostsByCategory = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid category id"
-                }
+                })
             }
         }
         const userHistory = History.findOne({user: id});

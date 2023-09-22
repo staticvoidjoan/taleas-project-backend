@@ -100,10 +100,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid requirement"
-                }
+                })
             }
         }
         if(!regex.test(position)) {
@@ -113,10 +113,10 @@ module.exports.updatePost = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body: {
+                body: JSON.stringify({
                     status: "error",
                     error: "Please provide a valid position"
-                }
+                })
             }
         }
 
