@@ -3,6 +3,8 @@ const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
 const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
+const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 module.exports.profileComplete = async (event, context) => {
   console.log(JSON.stringify(event));
