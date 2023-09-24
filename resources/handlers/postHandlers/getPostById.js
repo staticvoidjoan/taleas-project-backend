@@ -1,7 +1,9 @@
 const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const mongoose = require("mongoose");
-
+const Category = require("../../models/categoryModel");
+const User = require("../../models/userModel");
+const Employer = require("../../models/employerModel");
 module.exports.getPostById = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();

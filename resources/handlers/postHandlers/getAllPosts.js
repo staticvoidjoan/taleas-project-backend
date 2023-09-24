@@ -1,17 +1,21 @@
 const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
-
-
+const Category = require("../../models/categoryModel");
+const User = require("../../models/userModel");
+const Employer = require("../../models/employerModel");
 module.exports.getAllPosts = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
+    console.log("before query")
     try {
             const posts = await Post.find()
-            .populate("likedBy")
-            .populate("recLikes")
             .populate("category")
-            .populate("creatorId");
+            .populate("creatorId")
+            .populate("likedBy")
+            .populate("recLikes");
             
+            console.log("after query");
+            console.log(posts);
             if (posts.length === 0) {
                 return {
                     statusCode: 404, 

@@ -1,7 +1,9 @@
 const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const mongoose = require("mongoose");
-
+const Category = require("../../models/categoryModel");
+const User = require("../../models/userModel");
+const Employer = require("../../models/employerModel");
 
 module.exports.getPostsByCreatorId = async (event, context) => {
 
@@ -9,7 +11,7 @@ module.exports.getPostsByCreatorId = async (event, context) => {
     await connectDB();
     try{
         const { creatorId } = event.pathParameters;
-        if(!mongoose.Types.ObjectId.isValid(id)) { 
+        if(!mongoose.Types.ObjectId.isValid(creatorId)) { 
             return {
                 statusCode: 400, 
                 headers : {
