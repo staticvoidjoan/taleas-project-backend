@@ -37,7 +37,7 @@ module.exports.updateUser = async (event, context) => {
           };
       }
 
-      const bucketName = "users";
+      const bucketName = "userprofilephotobucket";
       //Delete previous profile photo
       if (user.profilePhoto !== undefined) {
         const deleteParams = {

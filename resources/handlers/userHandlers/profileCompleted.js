@@ -24,7 +24,7 @@ module.exports.profileComplete = async (event, context) => {
     const userId = event.pathParameters.id;
     const user = await User.findOne({ _id: userId });
 
-    const bucketName = "users";
+    const bucketName = "userprofilephotobucket";
       const invokeParams = {
         FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs', 
         Payload: JSON.stringify({ profilePhoto , bucketName }),

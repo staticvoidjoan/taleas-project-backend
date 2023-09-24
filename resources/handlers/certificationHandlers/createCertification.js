@@ -1,6 +1,6 @@
 const { connectDB } = require("../../config/dbConfig");
 const User = require("../../models/userModel");
-const Certifications = require("../../models/experienceModel");
+const Certifications = require("../../models/certeficationsModel");
 
 module.exports.createCertification = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -16,7 +16,7 @@ module.exports.createCertification = async (event, context) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     // Validate title, issuingOrganization, and issueDate
-    if (!title || !organization || issueDate) {
+    if (!title || !organization || !issueDate) {
       return {
         statusCode: 400,
         headers: {
@@ -86,7 +86,7 @@ module.exports.createCertification = async (event, context) => {
     const createdCertification = await certification.save();
     const updateUser = await User.findOneAndUpdate(
       { _id: userId },
-      { $push: { education: savedEducation._id } }
+      { $push: { certifications: createdCertification._id } }
     );
     return {
       statusCode: 200,
