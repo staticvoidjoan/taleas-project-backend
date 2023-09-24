@@ -1,6 +1,7 @@
-const connectDB = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const History = require("../../models/historyModel");
+const mongoose = require("mongoose");
 
 
 module.exports.getPostsByCategory = async (event, context) => {
@@ -18,10 +19,10 @@ module.exports.getPostsByCategory = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid category id"
-                }
+                })
             }
         }
         const userHistory = History.findOne({user: id});
@@ -32,8 +33,9 @@ module.exports.getPostsByCategory = async (event, context) => {
             {category: category, 
             _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
         })
-        .populate("user")
-        .populate("Employer");
+        .populate("likedBy")
+        .populate("recLikes")
+        .populate("creatorId");
         if (posts.length === 0) {
             return {
                 statusCode: 404, 
@@ -41,10 +43,10 @@ module.exports.getPostsByCategory = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "No posts found"
-                }
+                })
             }
         }
 

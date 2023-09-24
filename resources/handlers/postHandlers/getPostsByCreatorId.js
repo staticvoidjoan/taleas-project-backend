@@ -1,5 +1,6 @@
-const connectDB = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const mongoose = require("mongoose");
 
 
 module.exports.getPostsByCreatorId = async (event, context) => {
@@ -15,16 +16,18 @@ module.exports.getPostsByCreatorId = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid creator id"
-                }
+                })
             }
         }
 
         const posts = await Post.find({creatorId: creatorId})
-        .populate("user")
+        .populate("likedBy")
+        .populate("recLikes")
         .populate("category");
+
         if(posts.length === 0) {
             return {
                 statusCode: 404, 
@@ -32,10 +35,10 @@ module.exports.getPostsByCreatorId = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "No posts found"
-                }
+                })
             }
         }
         return {

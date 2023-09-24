@@ -3,6 +3,8 @@ const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
 const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
+const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 module.exports.profileComplete = async (event, context) => {
   console.log(JSON.stringify(event));
@@ -16,10 +18,20 @@ module.exports.profileComplete = async (event, context) => {
       generalSkills,
       languages,
       links,
+      profilePhoto,
     } = JSON.parse(event.body);
 
     const userId = event.pathParameters.id;
     const user = await User.findOne({ _id: userId });
+
+    const bucketName = "users";
+      const invokeParams = {
+        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs', 
+        Payload: JSON.stringify({ profilePhoto , bucketName }),
+      };
+      const invokeResult = await lambda.invoke(invokeParams).promise();
+      const uploadResult = JSON.parse(invokeResult.Payload);
+      console.log(uploadResult);
 
     // Regular expressions for validation
     const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
@@ -232,6 +244,7 @@ module.exports.profileComplete = async (event, context) => {
     user.generalSkills = generalSkills;
     user.languages = languages;
     user.links = links;
+    user.profilePhoto = uploadResult.body;
 
     // Save the user document
     const updatedUser = await user.save();

@@ -1,5 +1,6 @@
-const connectDB = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const mongoose = require("mongoose");
 
 module.exports.getPostById = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -14,16 +15,17 @@ module.exports.getPostById = async (event, context) => {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : {
+                body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid id"
-                }
+                })
             }
         }
         const post = await Post.findById(id)
-        .populate("user")
-        .populate("Employer")
-        .populate("category");
+        .populate("likedBy")
+        .populate("recLikes")
+        .populate("category")
+        .populate("creatorId");
         return {
             statusCode: 200, 
             headers : {

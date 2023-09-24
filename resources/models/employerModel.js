@@ -13,7 +13,7 @@ const Employer = new mongoose.Schema({
     type: String,
     required: true,
   },
-  logo: {
+  profilePhoto: {
     type: String,
   },
   subscriptionPlan: {

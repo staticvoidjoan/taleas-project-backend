@@ -1,7 +1,8 @@
 const { connectDB } = require("../../config/dbConfig");
-const Employer = require("../../models/employerModel");
 const User = require("../../models/userModel");
+const Employer = require('../../models/employerModel');
 const Post = require("../../models/postModel");
+
 
 module.exports.likeUser = async (event, context) => {
   console.log("Lambda function invoked");
@@ -10,11 +11,21 @@ module.exports.likeUser = async (event, context) => {
     await connectDB();
     console.log("Connected to the database");
 
-    const employerId = event.pathParameters.id;
-    const employer = await Employer.findById(employerId);
-    console.log("Employer Id", employer);
+    const userId = event.queryStringParameters.userId;
+    const user = await User.findById(userId);
+    console.log("User", user);
 
-    const postId = event.queryStringParameters.postId;
+    if (!user) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({
+          status: "error",
+          message: "User not found",
+        }),
+      };
+    }
+
+    const postId = event.pathParameters.postId;
     const post = await Post.findById(postId);
     console.log("Post", post);
 
@@ -28,17 +39,25 @@ module.exports.likeUser = async (event, context) => {
       };
     }
 
-    // Get the list of users who have liked the post
-    const usersWhoLikedPost = await User.find({ _id: { $in: post.likedBy } });
+    // Check if the user has liked the post
+    if (!post.likedBy.includes(user._id)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          status: "error",
+          message: "The user has not liked this post",
+        }),
+      };
+    }
 
-    // Check if the employer is not already in the recLikes array
-    if (!post.recLikes.includes(employer._id)) {
+    // Check if the employer has not already liked the user
+    if (!post.recLikes.includes(userId)) {
       // Add the employer's ID to the recLikes array
-      post.recLikes.push(employer._id);
+      post.recLikes.push(userId);
       await post.save();
     }
 
-    console.log("Employer liked the user successfully");
+    console.log("User liked by employer successfully");
 
     return {
       statusCode: 200,
@@ -49,7 +68,6 @@ module.exports.likeUser = async (event, context) => {
       body: JSON.stringify({
         status: "success",
         message: "User liked successfully",
-        usersWhoLikedPost,
       }),
     };
   } catch (error) {

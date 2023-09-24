@@ -3,6 +3,8 @@ const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
 const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
+const AWS = require('aws-sdk');
+const lambda = new AWS.Lambda();
 
 module.exports.updateUser = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -17,6 +19,7 @@ module.exports.updateUser = async (event, context) => {
         generalSkills,
         languages,
         links,
+        profilePhoto,
       } = JSON.parse(event.body);
       
       const userId = event.pathParameters.id;
@@ -34,7 +37,31 @@ module.exports.updateUser = async (event, context) => {
           };
       }
 
+      const bucketName = "users";
+      //Delete previous profile photo
+      if (user.profilePhoto !== undefined) {
+        const deleteParams = {
+            Bucket: bucketName,
+            Key: user.profilePhoto
+        };
+        try {
+            await s3.deleteObject(deleteParams).promise();
+        } catch (err) {
+            console.log('Error deleting old profile photo from S3', err);
+            throw err;
+        }
+    }
+      console.log("Invoke function")
+      const invokeParams = {
+        FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs', 
+        Payload: JSON.stringify({ profilePhoto , bucketName }),
+      };
+      const invokeResult = await lambda.invoke(invokeParams).promise();
+      const uploadResult = JSON.parse(invokeResult.Payload);
+      console.log(uploadResult);
+
       //Validations
+      const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
       const nameRegEx = /^[a-zA-Z]{2,30}$/;
     if (!nameRegEx.test(name)) {
       console.log("Name contains invalid characters");
@@ -161,6 +188,7 @@ module.exports.updateUser = async (event, context) => {
     user.generalSkills = generalSkills;
     user.languages = languages;
     user.links = links;
+    user.profilePhoto = uploadResult.body;
 
     // Save the updated user document
     const updatedUser = await user.save();

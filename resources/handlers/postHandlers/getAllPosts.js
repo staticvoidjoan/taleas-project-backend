@@ -1,4 +1,4 @@
-const connectDB = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 
 
@@ -7,9 +7,10 @@ module.exports.getAllPosts = async (event, context) => {
     await connectDB();
     try {
             const posts = await Post.find()
-            .populate("user")
-            .populate("Employer")
-            .populate("category");
+            .populate("likedBy")
+            .populate("recLikes")
+            .populate("category")
+            .populate("creatorId");
             
             if (posts.length === 0) {
                 return {
@@ -18,10 +19,10 @@ module.exports.getAllPosts = async (event, context) => {
                         "Access-Control-Allow-Origin": "*",
                         "Access-Control-Allow-Credentials": true,
                     },
-                    body : {
+                    body : JSON.stringify({
                         status: "error", 
                         error: "No posts found"
-                    }
+                    })
                 }
             }
     
