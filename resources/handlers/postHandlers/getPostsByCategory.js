@@ -45,7 +45,7 @@ module.exports.getPostsByCategory = async (event, context) => {
                 }
             }
             //when provided with a user id, get the user history and get the liked and disliked posts
-            const userHistory = History.findOne({user: id});
+            const userHistory = await History.findOne({user: id});
             console.log(userHistory)
             const likedPostIds = userHistory?.likedPosts || [];
             const dislikedPostIds = userHistory?.dislikedPosts || [];
