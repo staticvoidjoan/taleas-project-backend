@@ -8,7 +8,9 @@ module.exports.updatePost = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
     try{
-        const {id} = event.pathParameters;
+        const {creatorId} = event.pathParameters;
+        const {id} = event.queryStringParameters;
+
         if(!mongoose.Types.ObjectId.isValid(id)) {
             return {
                 statusCode: 400, 
@@ -75,49 +77,6 @@ module.exports.updatePost = async (event, context) => {
                 body : JSON.stringify({
                     status: "error", 
                     error: "Please provide a valid category id"
-                })
-            }
-        }
-        const regex = /^[a-zA-Z]+$/;
-        for (let requirement of requirements) {
-            if(!regex.test(requirement)) {
-                return {
-                    statusCode: 400, 
-                    headers : {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Credentials": true,
-                    },
-                    body : JSON.stringify({
-                        status: "error", 
-                        error: "Please provide a valid requirement"
-                    })
-                }
-            }
-        }
-
-        if(!regex.test(description)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid requirement"
-                })
-            }
-        }
-        if(!regex.test(position)) {
-            return {
-                statusCode: 400,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body: JSON.stringify({
-                    status: "error",
-                    error: "Please provide a valid position"
                 })
             }
         }
