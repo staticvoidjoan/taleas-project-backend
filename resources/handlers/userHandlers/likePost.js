@@ -10,14 +10,54 @@ module.exports.likePost = async (event, context) => {
 
     const userId = event.queryStringParameters.id;
     const user = await User.findOne({ _id: userId });
+    if(!user){
+      console.log('User not found');
+      return {
+        statusCode: 404,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({ status: "error", message: "User not found"}),
+      };
+    }
 
     const postId = event.pathParameters.id;
     const post = await Post.findById(postId);
+    if(!post){
+      console.log('Post not found');
+      return {
+        statusCode: 404,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Credentials": true,
+        },
+        body: JSON.stringify({ status: "error", message: "Post not found"}),
+      };
+    }
 
     const history = await History.findOne({user: userId})
+    if(!history) {
+      const newEntryInHistory = new History({
+          user: userId, 
+          likedPosts: [postId],
+          dislikedPosts: []
+      });
+      await newEntryInHistory.save();
+  }else{
+    const updateHistory = await History.findOneAndUpdate(
+      { user: userId },
+      { $push: { likedPosts: postId } }
+    );
+    console.log(updateHistory)
+  }
+
     //Update post likedBy array
-    await post.likedBy.push(user);
-    await history.likedPosts.push(post);
+    const updatePost = await Post.findOneAndUpdate(
+      { _id: postId },
+      { $push: { likedBy: userId } }
+    );
+    console.log(updatePost)
 
     return {
         statusCode: 200,
