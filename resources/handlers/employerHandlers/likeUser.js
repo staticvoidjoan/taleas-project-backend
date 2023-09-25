@@ -11,7 +11,7 @@ module.exports.likeUser = async (event, context) => {
     await connectDB();
     console.log("Connected to the database");
 
-    const userId = event.queryStringParameters.userId;
+    const userId = event.queryStringParameters.id;
     const user = await User.findById(userId);
     console.log("User", user);
 
@@ -25,7 +25,7 @@ module.exports.likeUser = async (event, context) => {
       };
     }
 
-    const postId = event.pathParameters.postId;
+    const postId = event.pathParameters.id;
     const post = await Post.findById(postId);
     console.log("Post", post);
 
