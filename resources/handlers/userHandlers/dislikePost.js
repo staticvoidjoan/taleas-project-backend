@@ -57,6 +57,7 @@ module.exports.dislikePost = async (event, context)  => {
               );
               console.log(updateHistory)
         }
+
         console.log('Success')
         return {
             statusCode: 200, 

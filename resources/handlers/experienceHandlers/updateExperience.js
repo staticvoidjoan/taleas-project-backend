@@ -8,7 +8,7 @@ module.exports.updateExperience = async (event, context) => {
     await connectDB();
     const experienceId = event.pathParameters.id;
     const experience = await Experience.findById(experienceId);
-    const { empolyer, position, startDate, endDate, description } = JSON.parse(
+    const { employer, position, startDate, endDate, description } = JSON.parse(
       event.body
     );
 
@@ -24,7 +24,7 @@ module.exports.updateExperience = async (event, context) => {
         };
     }
 
-    if (!empolyer || !position || !startDate) {
+    if (!employer || !position || !startDate) {
       return {
         statusCode: 400,
         headers: {
@@ -42,7 +42,7 @@ module.exports.updateExperience = async (event, context) => {
     const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (!textRegex.test(empolyer) || !textRegexRegex.test(position)) {
+    if (!textRegex.test(employer) || !textRegex.test(position)) {
         return {
           statusCode: 400,
           headers: {
@@ -56,7 +56,7 @@ module.exports.updateExperience = async (event, context) => {
       }
 
       // Validate start date and end date fields
-      if (!exp.startDate) {
+      if (!startDate) {
         return {
           statusCode: 400,
           headers: {
@@ -67,7 +67,7 @@ module.exports.updateExperience = async (event, context) => {
         };
       }
 
-      if (!dateRegex.test(startDate) || (exp.endDate && !dateRegex.test(endDate))) {
+      if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
         return {
           statusCode: 400,
           headers: {
@@ -103,7 +103,7 @@ module.exports.updateExperience = async (event, context) => {
         };
       }
 
-      experience.empolyer = empolyer;
+      experience.employer = employer;
       experience.position = position;
       experience.startDate = startDate;
       experience.endDate = endDate;

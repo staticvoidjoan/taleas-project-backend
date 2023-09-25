@@ -29,7 +29,7 @@ module.exports.updateCertification = async (event, context) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     // Validate title, issuingOrganization, and issueDate
-    if (!title || !organization || issueDate) {
+    if (!title || !organization || !issueDate) {
       return {
         statusCode: 400,
         headers: {
