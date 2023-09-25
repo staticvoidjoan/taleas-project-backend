@@ -18,23 +18,42 @@ module.exports.getPostsByCategory = async (event, context) => {
         console.log("category", category);
         console.log("user id", id);
 
-        if(!mongoose.Types.ObjectId.isValid(category)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid category id"
-                })
+            if(!mongoose.Types.ObjectId.isValid(category)) {
+                return {
+                    statusCode: 400, 
+                    headers : {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    },
+                    body : JSON.stringify({
+                        status: "error", 
+                        error: "Please provide a valid category id"
+                    })
+                }
             }
-        }
-        //when provided with a user id, get the user history and get the liked and disliked posts
-        const userHistory = History.findOne({user: id});
-        if(!userHistory) {
-            const posts = await Post.find({category: category}).populate("creatorId");
+            if(!mongoose.Types.ObjectId.isValid(id)) {
+                return {
+                    statusCode: 400, 
+                    headers : {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    },
+                    body : JSON.stringify({
+                        status: "error", 
+                        error: "Please provide a valid user id"
+                    })
+                }
+            }
+            //when provided with a user id, get the user history and get the liked and disliked posts
+            const userHistory = History.findOne({user: id});
+            console.log(userHistory)
+            const likedPostIds = userHistory?.likedPosts || [];
+            const dislikedPostIds = userHistory?.dislikedPosts || [];
+            console.log(likedPostIds);
+            console.log(dislikedPostIds);
+            const posts = await Post.find(
+            {category: category,
+            _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId");
             if (posts.length === 0) {
                 return {
                     statusCode: 404, 
@@ -48,7 +67,6 @@ module.exports.getPostsByCategory = async (event, context) => {
                     })
                 }
             }
-    
             return {
                 statusCode: 200, 
                 headers : {
@@ -56,46 +74,14 @@ module.exports.getPostsByCategory = async (event, context) => {
                     "Access-Control-Allow-Credentials": true,
                 },
                 body : JSON.stringify(posts)
-            }
-        }else{
-            const likedPostIds = userHistory.likedPosts || [];
-            const dislikedPostIds = userHistory.dislikedPosts || [];
-            console.log(likedPostIds);
-            console.log(dislikedPostIds);
-            const posts = await Post.find(
-                {category: category,
-                _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId");
-                if (posts.length === 0) {
-                    return {
-                        statusCode: 404, 
-                        headers : {
-                            "Access-Control-Allow-Origin": "*",
-                            "Access-Control-Allow-Credentials": true,
-                        },
-                        body : JSON.stringify({
-                            status: "error", 
-                            error: "No posts found"
-                        })
-                    }
-                }
-        
+            }}catch(error) {
                 return {
-                    statusCode: 200, 
+                    statusCode: 500, 
                     headers : {
                         "Access-Control-Allow-Origin": "*",
                         "Access-Control-Allow-Credentials": true,
                     },
-                    body : JSON.stringify(posts)
+                    body : JSON.stringify(error)
                 }
             }
-    }catch(error) {
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
-    }
 }
