@@ -53,7 +53,7 @@ module.exports.likeUser = async (event, context) => {
     // Check if the employer has not already liked the user
     if (!post.recLikes.includes(userId)) {
       // Add the employer's ID to the recLikes array
-      post.recLikes.push(userId);
+      await post.recLikes.push(userId);
       await post.save();
     }
 
