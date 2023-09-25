@@ -1,7 +1,8 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
-const AWS = require('aws-sdk');
+const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
+const s3 = new AWS.S3();
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -10,7 +11,9 @@ module.exports.updateEmployer = async (event) => {
     await connectDB();
     console.log("Connected to the database");
 
-    const { companyName, address, industry, profilePhoto } = JSON.parse(event.body);
+    const { companyName, address, industry, profilePhoto } = JSON.parse(
+      event.body
+    );
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
@@ -25,8 +28,8 @@ module.exports.updateEmployer = async (event) => {
       };
     }
 
-    const bucketName = "employers";
-    if (employer.profilePhoto) {
+    const bucketName = "userprofilephotobucket";
+    if (employer.profilePhoto !== undefined) {
       const deleteParams = {
         Bucket: bucketName,
         Key: employer.profilePhoto,
@@ -42,12 +45,14 @@ module.exports.updateEmployer = async (event) => {
     }
 
     const invokeParams = {
-      FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
+      FunctionName:
+        "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
       Payload: JSON.stringify({ profilePhoto, bucketName }),
     };
     const invokeResult = await lambda.invoke(invokeParams).promise();
     const uploadResult = JSON.parse(invokeResult.Payload);
     console.log(uploadResult);
+
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(companyName)) {
       console.log("Invalid name format");
@@ -73,6 +78,26 @@ module.exports.updateEmployer = async (event) => {
       };
     }
 
+    const industryEnum = [
+      "IT",
+      "Healthcare",
+      "Finance",
+      "Education",
+      "Manufacturing",
+    ];
+    const industryNameRegex = /^[A-Za-z\s]+$/;
+
+    if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
+      console.log("Invalid industry");
+      return {
+        statusCode: 400,
+        body: JSON.stringify({
+          error:
+            "Invalid industry! Industry should only contain letters and symbols, and it must be one of the allowed industries: IT, Healthcare, Finance, Education, Manufacturing",
+        }),
+      };
+    }
+
     employer.companyName = companyName;
     employer.address = address;
     employer.industry = industry;
@@ -91,7 +116,6 @@ module.exports.updateEmployer = async (event) => {
       },
       body: JSON.stringify(updatedEmployer),
     };
-
   } catch (error) {
     console.log("An error happened", error);
     return {
