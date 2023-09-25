@@ -5,6 +5,7 @@ const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
 const AWS = require('aws-sdk');
 const lambda = new AWS.Lambda();
+const s3 = new AWS.S3();
 
 module.exports.updateUser = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;

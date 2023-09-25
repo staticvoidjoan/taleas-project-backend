@@ -88,7 +88,7 @@ module.exports.profileComplete = async (event, context) => {
         };
       }
 
-      if (!textRegex.test(exp.employer) || !textRegexRegex.test(exp.position)) {
+      if (!textRegex.test(exp.employer) || !textRegex.test(exp.position)) {
         return {
           statusCode: 400,
           headers: {
