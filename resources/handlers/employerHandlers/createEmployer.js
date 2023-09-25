@@ -14,7 +14,7 @@ module.exports.createEmployer = async (event) => {
 
     const { companyName, email, industry, address, subscriptionPlan } = data;
 
-    if (!companyName || !email || !industry || address) {
+    if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
       return {
         statusCode: 400,
