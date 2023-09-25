@@ -13,6 +13,7 @@ module.exports.getPostsByCategory = async (event, context) => {
     try {
 
         const { category } = event.pathParameters; 
+        const { id } = event.queryStringParameters;
 
         if(!mongoose.Types.ObjectId.isValid(category)) {
             return {
