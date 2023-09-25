@@ -12,9 +12,9 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, industry, address, subscriptionPlan } = data;
+    const { companyName, email, industry, address, subscriptionPlan } = data;
 
-    if (!companyName || !industry || address) {
+    if (!companyName || !email || !industry || address) {
       console.log("All fields are required");
       return {
         statusCode: 400,
@@ -95,6 +95,7 @@ module.exports.createEmployer = async (event) => {
 
     const newEmployer = new Employer({
       companyName,
+      email,
       industry,
       address,
       subscriptionPlan,
