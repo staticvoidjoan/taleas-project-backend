@@ -8,7 +8,7 @@ module.exports.updatePost = async (event, context) => {
     try {
         await connectDB();
 
-        const { id } = event.queryStringParameters;
+        const { id } = event.pathParameters;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return {

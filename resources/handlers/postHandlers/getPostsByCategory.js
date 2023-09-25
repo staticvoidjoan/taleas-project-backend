@@ -28,42 +28,62 @@ module.exports.getPostsByCategory = async (event, context) => {
             }
         }
         //when provided with a user id, get the user history and get the liked and disliked posts
-        // const userHistory = History.findOne({user: id});
-        // const likedPostIds = userHistory.likedPosts;
-        // const dislikedPostIds = userHistory.dislikedPosts;
-        //find post where category is equal to category id and id of the post is not in the liked or disliked posts from the user history
-        // const posts = await Post.find(
-        //     {category: category, 
-        //     _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
-        // })
-        const posts = await Post.find({category: category})
-        .populate("likedBy")
-        .populate("recLikes")
-        .populate("creatorId");
-        if (posts.length === 0) {
+        const userHistory = History.findOne({user: id});
+        if(!userHistory) {
+            const posts = await Post.find({category: category}).populate("likedBy").populate("recLikes").populate("creatorId");
+            if (posts.length === 0) {
+                return {
+                    statusCode: 404, 
+                    headers : {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    },
+                    body : JSON.stringify({
+                        status: "error", 
+                        error: "No posts found"
+                    })
+                }
+            }
+    
             return {
-                statusCode: 404, 
+                statusCode: 200, 
                 headers : {
                     "Access-Control-Allow-Origin": "*",
                     "Access-Control-Allow-Credentials": true,
                 },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "No posts found"
-                })
+                body : JSON.stringify(posts)
             }
-        }
-
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(posts)
-        }
-
-
+        }else{
+            const likedPostIds = userHistory?.likedPosts || [];
+            const dislikedPostIds = userHistory?.dislikedPosts || [];
+            console.log(likedPostIds);
+            console.log(dislikedPostIds);
+            const posts = await Post.find(
+                {category: category,
+                _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("likedBy").populate("recLikes").populate("creatorId");
+                if (posts.length === 0) {
+                    return {
+                        statusCode: 404, 
+                        headers : {
+                            "Access-Control-Allow-Origin": "*",
+                            "Access-Control-Allow-Credentials": true,
+                        },
+                        body : JSON.stringify({
+                            status: "error", 
+                            error: "No posts found"
+                        })
+                    }
+                }
+        
+                return {
+                    statusCode: 200, 
+                    headers : {
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Credentials": true,
+                    },
+                    body : JSON.stringify(posts)
+                }
+            }
     }catch(error) {
         return {
             statusCode: 500, 
