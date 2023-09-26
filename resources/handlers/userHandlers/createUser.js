@@ -69,6 +69,7 @@ module.exports.createUser = async (event, context) => {
       console.log("Email already exists");
       return {
         statusCode: 409,
+        
         body: JSON.stringify({
           error:
             "Email already exists! Try a different one or try to login to your account.",
