@@ -20,14 +20,18 @@ const EmployerSchema = new mongoose.Schema({
   profilePhoto: {
     type: String,
   },
-  subscriptionPlan: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'SubscriptionPlan' 
-  },
-  startDate: { 
-    type: Date,
-    default: Date.now
-  }
+  // subscriptionPlan: {
+  //   type: mongoose.Schema.Types.ObjectId, 
+  //   ref: 'SubscriptionPlan' 
+  // },
+  // startDate: { 
+  //   type: Date,
+  //   default: Date.now
+  // },
+  // subscriptionEndDate: {
+  //   type: Date,
+  //   required: true,
+  // }
 });
 
 EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
