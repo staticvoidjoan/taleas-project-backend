@@ -15,7 +15,7 @@ module.exports.createEmployer = async (event) => {
 
     const { companyName, email, industry, address, subscriptionPlan } = data;
 
-    if (!companyName || !email || !industry || !address || !subscriptionPlan) {
+    if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
       return Responses._400({
         status: "error",
@@ -81,16 +81,16 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    const validSubscriptionPlan = await SubscriptionPlan.findOne({
-      name: subscriptionPlan,
-    });
-    if (!validSubscriptionPlan) {
-      console.log("Invalid subscription plan");
-      return Responses._400({
-        status: "error",
-        message: "Invalid subscription plan! Please choose a valid one.",
-      });
-    }
+    // const validSubscriptionPlan = await SubscriptionPlan.findOne({
+    //   name: subscriptionPlan,
+    // });
+    // if (!validSubscriptionPlan) {
+    //   console.log("Invalid subscription plan");
+    //   return Responses._400({
+    //     status: "error",
+    //     message: "Invalid subscription plan! Please choose a valid one.",
+    //   });
+    // }
 
     const newEmployer = new Employer({
       companyName,
