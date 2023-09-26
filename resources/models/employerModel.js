@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const Employer = new mongoose.Schema({
+const EmployerSchema = new mongoose.Schema({
   companyName: {
     type: String,
     required: true,
@@ -21,9 +21,19 @@ const Employer = new mongoose.Schema({
     type: String,
   },
   subscriptionPlan: {
-    type: String,
-    required: false,
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'SubscriptionPlan' 
+  },
+  startDate: { 
+    type: Date,
+    default: Date.now
   }
 });
 
-module.exports = mongoose.model("Employer", Employer);
+EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
+  const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+  const now = Date.now();
+  return now - this.startDate > oneMonthInMilliseconds;
+};
+
+module.exports = mongoose.model("Employer", EmployerSchema);

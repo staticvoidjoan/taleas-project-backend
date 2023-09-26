@@ -3,6 +3,7 @@ const User = require("../../models/userModel");
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
+const SubscriptionPlan = require("../../models/subsciptionModel");
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -14,7 +15,7 @@ module.exports.createEmployer = async (event) => {
 
     const { companyName, email, industry, address, subscriptionPlan } = data;
 
-    if (!companyName || !email || !industry || !address) {
+    if (!companyName || !email || !industry || !address || !subscriptionPlan) {
       console.log("All fields are required");
       return Responses._400({
         status: "error",
@@ -80,18 +81,16 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    // const membershipPlanExists = await MembershipPlan.findOne({
-    //   membershipPlan,
-    // });
-    // if (!membershipPlanExists) {
-    //   console.log("Membership plan does not exists");
-    //   return {
-    //     statusCode: 404,
-    //     body: JSON.stringify({
-    //       error: "Membership plan does not exists! Please choose another one.",
-    //     }),
-    //   };
-    // }
+    const validSubscriptionPlan = await SubscriptionPlan.findOne({
+      name: subscriptionPlan,
+    });
+    if (!validSubscriptionPlan) {
+      console.log("Invalid subscription plan");
+      return Responses._400({
+        status: "error",
+        message: "Invalid subscription plan! Please choose a valid one.",
+      });
+    }
 
     const newEmployer = new Employer({
       companyName,
@@ -107,6 +106,7 @@ module.exports.createEmployer = async (event) => {
     return Responses._200({
       status: "success",
       message: "Employer created successfully",
+      newEmployer,
     });
   } catch (error) {
     console.log("An error happened", error);
