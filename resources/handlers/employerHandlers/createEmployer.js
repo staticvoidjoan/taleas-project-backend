@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const User = require("../../models/userModel");
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
+const Responses = require("../apiResponses");
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
   await connectDB();
-  console.log("Connected to the database");
 
   try {
     const data = JSON.parse(event.body);
@@ -16,25 +16,20 @@ module.exports.createEmployer = async (event) => {
 
     if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "All fields are required( company name, industry, address and subscription plan)",
-        }),
-      };
+      return Responses._400({
+        status: "error",
+        message: "All fields are required",
+      });
     }
 
     const nameRegex = /^[A-Za-z\s]+$/;
     if (!nameRegex.test(companyName)) {
       console.log("Invalid name format");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "Invalid name format! The company name should only contain letters and spaces",
-        }),
-      };
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid company name format! Company name should only contain letters and symbols",
+      });
     }
 
     const industryEnum = [
@@ -48,36 +43,41 @@ module.exports.createEmployer = async (event) => {
 
     if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
       console.log("Invalid industry");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "Invalid industry! Industry should only contain letters and symbols, and it must be one of the allowed industries: IT, Healthcare, Finance, Education, Manufacturing",
-        }),
-      };
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid industry field! Industry should be only from IT, Healthacare, Finance, Education and Manufacturing.",
+      });
+    }
+
+    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
+
+    if (!addressRegex.test(address)) {
+      console.log("Invalid address format");
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
+      });
     }
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!emailRegex.test(email)) {
       console.log("Invalid email format");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error: "Invalid email format! Please provide a valid email address.",
-        }),
-      };
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid email format! Please provide a correct email format (ex. johndoe@gmail.com)",
+      });
     }
 
     const existingEmployer = await Employer.findOne({ email: email });
     if (existingEmployer) {
       console.log("Email already exists in the database");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "Email already exists in the database. Please use a different email address.",
-        }),
-      };
+      return Responses._400({
+        status: "error",
+        message: "Email already exists! Try another one.",
+      });
     }
 
     // const membershipPlanExists = await MembershipPlan.findOne({
@@ -104,23 +104,16 @@ module.exports.createEmployer = async (event) => {
     await newEmployer.save();
     console.log("Employer saved to the database", newEmployer);
 
-    return {
-      statusCode: 201,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({ message: "Company data saved successfully" }),
-    };
+    return Responses._200({
+      status: "success",
+      message: "Employer created successfully",
+    });
   } catch (error) {
     console.log("An error happened", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "An error occurred while creating the employer",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message:
+        "An error occurred while retreiving the employer, check the logs for more information",
+    });
   }
 };
