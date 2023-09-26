@@ -82,16 +82,16 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    const validSubscriptionPlan = await SubscriptionPlan.findOne({
-      _id: subscriptionPlan,
-    });
-    if (!validSubscriptionPlan) {
-      console.log("Invalid subscription plan");
-      return Responses._400({
-        status: "error",
-        message: "Invalid subscription plan! Please choose a valid one.",
-      });
-    }
+    // const validSubscriptionPlan = await SubscriptionPlan.findOne({
+    //   _id: subscriptionPlan,
+    // });
+    // if (!validSubscriptionPlan) {
+    //   console.log("Invalid subscription plan");
+    //   return Responses._400({
+    //     status: "error",
+    //     message: "Invalid subscription plan! Please choose a valid one.",
+    //   });
+    // }
 
     const customer = await stripe.customers.create({
       email: email,
