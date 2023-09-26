@@ -3,8 +3,8 @@ const User = require("../../models/userModel");
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
-const SubscriptionPlan = require("../../models/subsciptionModel");
-const stripe = require('stripe')('sk_test_51NuYXQIRaI2xdKVa2qsVKF26DTZ97AFsfA5mnjCCpX6GBRqRGB5MpbOJtizI0NfrBHhzysuQW7bKNTufR8MoaYGO00i3a4BO0p');
+// const SubscriptionPlan = require("../../models/subsciptionModel");
+// const stripe = require('stripe')('sk_test_51NuYXQIRaI2xdKVa2qsVKF26DTZ97AFsfA5mnjCCpX6GBRqRGB5MpbOJtizI0NfrBHhzysuQW7bKNTufR8MoaYGO00i3a4BO0p');
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -93,9 +93,9 @@ module.exports.createEmployer = async (event) => {
     //   });
     // }
 
-    const customer = await stripe.customers.create({
-      email: email,
-    });
+    // const customer = await stripe.customers.create({
+    //   email: email,
+    // });
 
     const newEmployer = new Employer({
       companyName,
