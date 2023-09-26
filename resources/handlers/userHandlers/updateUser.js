@@ -147,7 +147,7 @@ module.exports.updateUser = async (event, context) => {
     const updatedUser = await user.save();
 
     return Responses._200({
-      message: "User updated successfully",
+      status: "success",
       updatedUser,
     });
   } catch (error) {

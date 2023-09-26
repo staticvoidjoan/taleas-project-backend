@@ -3,6 +3,7 @@ const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
 const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
+const Responses = require("../apiResponses");
 
 module.exports.getUser = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -16,38 +17,17 @@ module.exports.getUser = async (event, context) => {
       .populate("experience")
       .populate("certifications");
 
-      if (!user) {
-        console.log('User not found');
-        return {
-          statusCode: 404,
-          headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Credentials': true,
-          },
-          body: JSON.stringify({status: "error", error: "User not found" }),
-        };
-      }
-  
-      return {
-        statusCode: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify(user),
-      };
+    if (!user) {
+      console.log("User not found");
+      return Responses._404({ status: "error", message: "User not found" });
+    }
+
+    return Responses._200({status: "success", user});
   } catch (error) {
     console.error("Something went wrong", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        status: "error",
-        message: "An error occurred while getting the user",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message: "An error occurred while getting the user",
+    });
   }
 };

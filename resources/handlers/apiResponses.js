@@ -10,6 +10,17 @@ const Responses = {
             body: JSON.stringify(data),
         };
     },
+    _201(data = {}) {
+        return {
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+            },
+            statusCode: 201,
+            body: JSON.stringify(data),
+        };
+    },
     _404(data = {}) {
         return {
             headers: {
@@ -53,7 +64,17 @@ const Responses = {
             statusCode: 403,
             body: JSON.stringify(data),
         };
-    
+    },
+    _409(data = {}) {
+        return {
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*",
+            },
+            statusCode: 409,
+            body: JSON.stringify(data),
+        };
     }
 };
 module.exports = Responses;

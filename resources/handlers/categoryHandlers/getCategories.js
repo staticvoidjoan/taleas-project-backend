@@ -1,43 +1,23 @@
 const { connectDB } = require("../../config/dbConfig");
 const Category = require("../../models/categoryModel");
+const Responses = require("../apiResponses");
 
 module.exports.getCategories = async (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+  context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
     const categories = await Category.find();
     if (!categories) {
       console.log("No category found");
-      return {
-        statusCode: 404,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({ status: "error", error: "No category found" }),
-      };
+      return Responses._404({ status: "error", error: "No category found" });
     }
 
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify(categories),
-    };
+    return Responses._200({status:"success", categories });
   } catch (error) {
     console.error("Something went wrong", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        status: "error",
-        message: "An error occurred while getting the user",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message: "An error occurred while getting the user",
+    });
   }
 };
