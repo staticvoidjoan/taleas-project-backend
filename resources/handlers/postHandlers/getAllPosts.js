@@ -3,6 +3,7 @@ const Post = require("../../models/postModel");
 const Category = require("../../models/categoryModel");
 const User = require("../../models/userModel");
 const Employer = require("../../models/employerModel");
+const Responses = require("../apiResponses");
 module.exports.getAllPosts = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
@@ -17,35 +18,11 @@ module.exports.getAllPosts = async (event, context) => {
             console.log("after query");
             console.log(posts);
             if (posts.length === 0) {
-                return {
-                    statusCode: 404, 
-                    headers : {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Credentials": true,
-                    },
-                    body : JSON.stringify({
-                        status: "error", 
-                        error: "No posts found"
-                    })
-                }
+                return Responses._404({message: "No posts found"})
             }
     
-            return {
-                statusCode: 200, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify(posts)
-            }
+            return Responses._200({posts})
     }catch(error) {
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
+        return Responses._500({message: "Internal server error"})
     }
 }

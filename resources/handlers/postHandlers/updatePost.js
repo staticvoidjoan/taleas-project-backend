@@ -1,7 +1,7 @@
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const mongoose = require("mongoose");
-
+const Responses = require("../apiResponses");
 module.exports.updatePost = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
@@ -11,33 +11,13 @@ module.exports.updatePost = async (event, context) => {
         const { id } = event.pathParameters;
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return {
-                statusCode: 400,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body: JSON.stringify({
-                    status: "error",
-                    error: "Please provide a valid id",
-                }),
-            };
+            return Responses._400({ message: "Please provide a valid post id" });
         }
 
         const postExists = await Post.findById(id);
 
         if (!postExists) {
-            return {
-                statusCode: 404,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body: JSON.stringify({
-                    status: "error",
-                    error: "Post not found",
-                }),
-            };
+            return Responses._404({ message: "Post not found" });
         }
 
         const {
@@ -48,17 +28,7 @@ module.exports.updatePost = async (event, context) => {
         } = JSON.parse(event.body);
 
         if (!category || !position || !requirements) {
-            return {
-                statusCode: 400,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body: JSON.stringify({
-                    status: "error",
-                    error: "Please provide all the required fields",
-                }),
-            };
+            return Responses._400({message: "Please provide all the required fields"});
         }
 
         const { id: creatorId } = postExists; // Use the creatorId from the existing post
@@ -75,25 +45,8 @@ module.exports.updatePost = async (event, context) => {
             { new: true }
         );
 
-        return {
-            statusCode: 200,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body: JSON.stringify(updatedPost),
-        };
+        return Responses._200({ message: "Post updated successfully", updatedPost });
     } catch (error) {
-        return {
-            statusCode: 500,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body: JSON.stringify({
-                status: "error",
-                error: error.message, // Return the error message
-            }),
-        };
+        return Responses._500({ message: "Internal server error" });
     }
 };

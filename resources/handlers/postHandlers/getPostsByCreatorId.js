@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const Category = require("../../models/categoryModel");
 const User = require("../../models/userModel");
 const Employer = require("../../models/employerModel");
-
+const Responses = require("../apiResponses");
 module.exports.getPostsByCreatorId = async (event, context) => {
 
     context.callbackWaitsForEmptyEventLoop = false;
@@ -12,17 +12,7 @@ module.exports.getPostsByCreatorId = async (event, context) => {
     try{
         const { creatorId } = event.pathParameters;
         if(!mongoose.Types.ObjectId.isValid(creatorId)) { 
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid creator id"
-                })
-            }
+            return Responses._400({message: "Please provide a valid creator id"})
         }
 
         const posts = await Post.find({creatorId: creatorId})
@@ -31,36 +21,12 @@ module.exports.getPostsByCreatorId = async (event, context) => {
         .populate("category");
 
         if(posts.length === 0) {
-            return {
-                statusCode: 404, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "No posts found"
-                })
-            }
+            return Responses._404({message: "No posts found"})
         }
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(posts)
-        }
+        return Responses._200({posts})
 
     }catch(error){
         console.log(error);
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
+        return Responses._500({message: "Internal server error"})
     }
 }
