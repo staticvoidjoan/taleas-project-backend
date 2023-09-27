@@ -15,7 +15,7 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, email, industry, address, amount } = data;
+    const { companyName, email, industry, address, /*amount*/ } = data;
 
     if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
@@ -83,28 +83,28 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    let maxPosts;
-    if (amount === 0) {
-      maxPosts = 1;
-    } else if (amount === 1000) {
-      maxPosts = 5;
-    } else if (amount === 1500) {
-      maxPosts = Infinity;
-    } else {
-      console.log("Invalid amount: ", amount);
-      return Responses._400({
-        status: "error",
-        message: "Invalid amount",
-      });
-    }
+    // let maxPosts;
+    // if (amount === 0) {
+    //   maxPosts = 1;
+    // } else if (amount === 1000) {
+    //   maxPosts = 5;
+    // } else if (amount === 1500) {
+    //   maxPosts = Infinity;
+    // } else {
+    //   console.log("Invalid amount: ", amount);
+    //   return Responses._400({
+    //     status: "error",
+    //     message: "Invalid amount",
+    //   });
+    // }
 
     const newEmployer = new Employer({
       companyName,
       email,
       industry,
       address,
-      maxPosts,
-      amount,
+      /*maxPosts*/
+      /*amount*/
     });
 
     await newEmployer.save();
