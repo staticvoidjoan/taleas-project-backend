@@ -22,12 +22,12 @@ const EmployerSchema = new mongoose.Schema({
   },
   postsMade: {
     type: Number,
-    required: true,
+    required: false,
     default: 0
   },
   maxPosts:{
     type: Number,
-    required: true,
+    required: false,
   }
 });
 

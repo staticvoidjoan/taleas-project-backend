@@ -88,7 +88,7 @@ module.exports.createEmployer = async (event) => {
       maxPosts = 1;
     } else if (amount === 1000) {
       maxPosts = 5;
-    } else if (amount === 15000) {
+    } else if (amount === 1500) {
       maxPosts = Infinity;
     } else {
       console.log("Invalid amount: ", amount);
