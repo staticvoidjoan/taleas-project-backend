@@ -1,4 +1,5 @@
 import AWS from "aws-sdk";
+const Responses = require('../apiResponses');
 
 AWS.config.update({
   accessKeyId: process.env.ACCESS_KEY,
