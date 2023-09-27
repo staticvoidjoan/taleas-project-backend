@@ -22,7 +22,7 @@ module.exports.getEmployerByEmail = async (event) => {
       });
     }
 
-    const posts = await Post.find({ creatorId: employerEmail });
+    const posts = await Post.find({ creatorId: employer._id });
 
     employer.posts = posts;
 
