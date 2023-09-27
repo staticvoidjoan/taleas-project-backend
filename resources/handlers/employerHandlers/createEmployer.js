@@ -3,8 +3,7 @@ const User = require("../../models/userModel");
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
-// const SubscriptionPlan = require("../../models/subsciptionModel");
-// const stripe = require('stripe')('sk_test_51NuYXQIRaI2xdKVa2qsVKF26DTZ97AFsfA5mnjCCpX6GBRqRGB5MpbOJtizI0NfrBHhzysuQW7bKNTufR8MoaYGO00i3a4BO0p');
+const stripe = require('stripe')('sk_test_51Ns4rKKz6QEa5lRsEQCTAql7fzfv7GIjGJPrsRiDbSNYCTgjFGs8eEnvahiffdeyCBtN1R788mDqgaspRPQM2cOM000OL4L9WF');
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -14,7 +13,7 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, email, industry, address } = data;
+    const { companyName, email, industry, address, stripeCustomerId } = data;
 
     if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
@@ -82,27 +81,12 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    // const validSubscriptionPlan = await SubscriptionPlan.findOne({
-    //   _id: subscriptionPlan,
-    // });
-    // if (!validSubscriptionPlan) {
-    //   console.log("Invalid subscription plan");
-    //   return Responses._400({
-    //     status: "error",
-    //     message: "Invalid subscription plan! Please choose a valid one.",
-    //   });
-    // }
-
-    // const customer = await stripe.customers.create({
-    //   email: email,
-    // });
-
     const newEmployer = new Employer({
       companyName,
       email,
       industry,
       address,
-      stripeCustomerId: customer.id,
+      stripeCustomerId,
     });
 
     await newEmployer.save();
