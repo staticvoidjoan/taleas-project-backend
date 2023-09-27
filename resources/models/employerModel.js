@@ -20,24 +20,17 @@ const EmployerSchema = new mongoose.Schema({
   profilePhoto: {
     type: String,
   },
-  // subscriptionPlan: {
-  //   type: mongoose.Schema.Types.ObjectId, 
-  //   ref: 'SubscriptionPlan' 
-  // },
-  // startDate: { 
-  //   type: Date,
-  //   default: Date.now
-  // },
-  // subscriptionEndDate: {
-  //   type: Date,
-  //   required: true,
-  // }
+  postsMade: {
+    type: Number,
+    required: true,
+    default: 0
+  },
 });
 
-EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
-  const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  return now - this.startDate > oneMonthInMilliseconds;
-};
+// EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
+//   const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000;
+//   const now = Date.now();
+//   return now - this.startDate > oneMonthInMilliseconds;
+// };
 
 module.exports = mongoose.model("Employer", EmployerSchema);
