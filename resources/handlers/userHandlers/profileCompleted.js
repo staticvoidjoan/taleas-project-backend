@@ -48,7 +48,6 @@ module.exports.profileComplete = async (event, context) => {
           error: "Institution and degree must be alphanumeric.",
         });
       }
-    });
 
     if (
       !dateRegex.test(edu.startDate) ||
@@ -58,7 +57,7 @@ module.exports.profileComplete = async (event, context) => {
         error: "Start date and end date must be in YYYY-MM-DD format.",
       });
     }
-
+  });
     // Create education, experience, certifications data
     const educationDocuments = await Education.create(education);
 
