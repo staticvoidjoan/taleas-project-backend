@@ -3,7 +3,9 @@ const User = require("../../models/userModel");
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
-const stripe = require('stripe')('sk_test_51Ns4rKKz6QEa5lRsEQCTAql7fzfv7GIjGJPrsRiDbSNYCTgjFGs8eEnvahiffdeyCBtN1R788mDqgaspRPQM2cOM000OL4L9WF');
+const stripe = require("stripe")(
+  "sk_test_51Ns4rKKz6QEa5lRsEQCTAql7fzfv7GIjGJPrsRiDbSNYCTgjFGs8eEnvahiffdeyCBtN1R788mDqgaspRPQM2cOM000OL4L9WF"
+);
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
@@ -13,7 +15,7 @@ module.exports.createEmployer = async (event) => {
     const data = JSON.parse(event.body);
     console.log("Received data", data);
 
-    const { companyName, email, industry, address, stripeCustomerId } = data;
+    const { companyName, email, industry, address, amount } = data;
 
     if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
@@ -81,12 +83,28 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
+    let maxPosts;
+    if (amount === 0) {
+      maxPosts = 1;
+    } else if (amount === 1000) {
+      maxPosts = 5;
+    } else if (amount === 15000) {
+      maxPosts = Infinity;
+    } else {
+      console.log("Invalid amount: ", amount);
+      return Responses._400({
+        status: "error",
+        message: "Invalid amount",
+      });
+    }
+
     const newEmployer = new Employer({
       companyName,
       email,
       industry,
       address,
-      stripeCustomerId,
+      maxPosts,
+      amount,
     });
 
     await newEmployer.save();
