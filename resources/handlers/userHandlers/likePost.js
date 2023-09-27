@@ -9,14 +9,14 @@ module.exports.likePost = async (event, context) => {
   try {
     await connectDB();
 
-    const userId = event.queryStringParameters.id;
+    const userId = event.pathParameters.id;
     const user = await User.findOne({ _id: userId });
     if (!user) {
       console.log("User not found");
       return Responses._404({ status: "error", message: "User not found" });
     }
 
-    const postId = event.pathParameters.id;
+    const postId = event.queryStringParameters.id;
     const post = await Post.findById(postId);
     if (!post) {
       console.log("Post not found");
