@@ -25,6 +25,10 @@ const EmployerSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
+  maxPosts:{
+    type: Number,
+    required: true,
+  }
 });
 
 // EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
