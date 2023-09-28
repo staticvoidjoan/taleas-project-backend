@@ -111,6 +111,7 @@ module.exports.updateUser = async (event, context) => {
       }
     }
 
+    if(generalSkills.length > 0){
     generalSkills.map((skill) => {
       if (!textRegex.test(skill)) {
         return Responses._400({
@@ -118,7 +119,8 @@ module.exports.updateUser = async (event, context) => {
         });
       }
     });
-
+  }
+  if(languages.length > 0){
     languages.map((language) => {
       if (!textRegex.test(language)) {
         return Responses._400({
@@ -126,10 +128,11 @@ module.exports.updateUser = async (event, context) => {
         });
       }
     });
-
+  }
     const linksRegEx =
       /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
-    links.map((link) => {
+    if(links.length > 0){
+      links.map((link) => {
       if (!linksRegEx.test(link)) {
         console.log("Provided link is not correct");
         return Responses._200({
@@ -138,7 +141,7 @@ module.exports.updateUser = async (event, context) => {
         });
       }
     });
-
+  }
     user.name = name;
     user.lastname = lastname;
     user.headline = headline;

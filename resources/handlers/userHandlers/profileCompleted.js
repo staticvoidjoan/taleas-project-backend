@@ -49,6 +49,7 @@ module.exports.profileComplete = async (event, context) => {
       });
     }
 
+    if(education.length > 0){
     education.map((edu) => {
       if (!textRegex.test(edu.institution) || !textRegex.test(edu.degree)) {
         return Responses._400({
@@ -65,10 +66,12 @@ module.exports.profileComplete = async (event, context) => {
       });
     }
   });
+}
     // Create education, experience, certifications data
     const educationDocuments = await Education.create(education);
 
     // Validate employer and position fields
+    if(experience.length > 0){
     experience.map((exp) => {
       if (!exp.employer || !exp.position) {
         return Responses._400({
@@ -105,8 +108,10 @@ module.exports.profileComplete = async (event, context) => {
         return Responses._400({ error: "Description is required." });
       }
     });
+  }
     const experienceDocuments = await Experience.create(experience);
 
+    if(certifications.length > 0){
     certifications.map((cert) => {
       if (!cert.title || !cert.organization || !cert.startDate) {
         return Responses._400({
@@ -129,9 +134,11 @@ module.exports.profileComplete = async (event, context) => {
         });
       }
     });
+  }
     const certificationsDocuments = await Certifications.create(certifications);
 
     // Validate generalSkills, languages, and links fields
+    if(gerenalSkills.length > 0){
     generalSkills.map((skill) => {
       if (!textRegex.test(skill)) {
         return Responses._400({
@@ -139,7 +146,8 @@ module.exports.profileComplete = async (event, context) => {
         });
       }
     });
-
+  }
+  if(languages.length > 0){
     languages.map((language) => {
       if (!textRegex.test(language)) {
         return Responses._400({
@@ -147,13 +155,14 @@ module.exports.profileComplete = async (event, context) => {
         });
       }
     });
-
+  }
+  if(links.length > 0){
     links.map((link) => {
       if (!urlRegex.test(link)) {
         return Responses._400({ error: "Links must be valid URLs." });
       }
     });
-
+  }
     // Update user document and associate with education, experience, and certifications
     user.headline = headline;
     user.education = educationDocuments.map((edu) => edu._id);
