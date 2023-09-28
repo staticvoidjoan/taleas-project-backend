@@ -35,21 +35,7 @@ module.exports.dislikeUser = async (event, context) => {
       });
     }
 
-    const historyUser = await History.findOne({ user: user._id });
-    if (!historyUser) {
-      const newEntryInHistory = new History({
-        user: user._id,
-        dislikedUsers: [userId],
-      });
-      await newEntryInHistory.save();
-      console.log(newEntryInHistory);
-    } else {
-      const updateHistory = await History.findOneAndUpdate(
-        { user: user._id },
-        { $push: { dislikedUsers: userId } }
-      );
-      console.log(updateHistory);
-    }
+    await Post.findByIdAndUpdate(postId, { $pull: { likedBy: userId } });
 
     console.log("User disliked by employer successfully");
 
