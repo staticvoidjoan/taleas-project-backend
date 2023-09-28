@@ -18,7 +18,8 @@ module.exports.getPostsByCreatorId = async (event, context) => {
         const posts = await Post.find({creatorId: creatorId})
         .populate("likedBy")
         .populate("recLikes")
-        .populate("category");
+        .populate("category")
+        .populate("creatorId");
 
         if(posts.length === 0) {
             return Responses._404({message: "No posts found"})

@@ -11,7 +11,7 @@ module.exports.updateEmployer = async (event) => {
   try {
     await connectDB();
 
-    const { companyName, address, industry, profilePhoto } = JSON.parse(
+    const {address, profilePhoto } = JSON.parse(
       event.body
     );
     console.log("Received data", event.body);
@@ -53,16 +53,6 @@ module.exports.updateEmployer = async (event) => {
     const uploadResult = JSON.parse(invokeResult.Payload);
     console.log(uploadResult);
 
-    const nameRegex = /^[A-Za-z\s]+$/;
-    if (!nameRegex.test(companyName)) {
-      console.log("Invalid name format");
-      return Responses._400({
-        status: "error",
-        message:
-          "Invalid name format! Company name should only contain letters and spaces",
-      });
-    }
-
     const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
     if (!addressRegex.test(address)) {
@@ -73,28 +63,8 @@ module.exports.updateEmployer = async (event) => {
           "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
       });
     }
-
-    const industryEnum = [
-      "IT",
-      "Healthcare",
-      "Finance",
-      "Education",
-      "Manufacturing",
-    ];
-    const industryNameRegex = /^[A-Za-z\s]+$/;
-
-    if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
-      console.log("Invalid industry");
-      return Responses._400({
-        status: "error",
-        message:
-          "Invalid industry field! Industry should be only from IT, Healthacare, Finance, Education and Manufacturing.",
-      });
-    }
-
-    employer.companyName = companyName;
+    
     employer.address = address;
-    employer.industry = industry;
     employer.profilePhoto = uploadResult.body;
 
     const updatedEmployer = await employer.save();
