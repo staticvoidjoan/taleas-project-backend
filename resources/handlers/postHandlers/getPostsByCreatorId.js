@@ -11,11 +11,16 @@ module.exports.getPostsByCreatorId = async (event, context) => {
     await connectDB();
     try{
         const { creatorId } = event.pathParameters;
+        const page = parseInt(event.queryStringParameters.page) || 1;
+        const limit = parseInt(event.queryStringParameters.limit) || 10;
         if(!mongoose.Types.ObjectId.isValid(creatorId)) { 
             return Responses._400({message: "Please provide a valid creator id"})
         }
 
-        const posts = await Post.find({creatorId: creatorId})
+        const count = await Post.countDocuments({creatorId: creatorId});
+        const pageCount = Math.ceil(count / limit);
+
+        const posts = await Post.find({creatorId: creatorId}).skip((page - 1) * limit).limit(limit)
         .populate("likedBy")
         .populate("recLikes")
         .populate("category")
@@ -24,7 +29,13 @@ module.exports.getPostsByCreatorId = async (event, context) => {
         if(posts.length === 0) {
             return Responses._404({message: "No posts found"})
         }
-        return Responses._200({posts})
+        return Responses._200(
+            {
+                posts: posts,
+                count: count,
+                pageCount: pageCount
+            }
+        )
 
     }catch(error){
         console.log(error);
