@@ -16,7 +16,6 @@ const User = mongoose.model(
     },
     headline: {
         type: String,
-        required: true,
     },
     education: [{
         type: mongoose.Schema.Types.ObjectId,
