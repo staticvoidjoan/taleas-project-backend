@@ -6,16 +6,26 @@ const Responses = require("../apiResponses");
 const stripe = require("stripe")(
   "sk_test_51Ns4rKKz6QEa5lRsEQCTAql7fzfv7GIjGJPrsRiDbSNYCTgjFGs8eEnvahiffdeyCBtN1R788mDqgaspRPQM2cOM000OL4L9WF"
 );
+const {customers} = require('../employerHandlers/subscriptionHandler');
 
 module.exports.createEmployer = async (event) => {
   console.log("Lambda function invoked");
   await connectDB();
 
   try {
-    const data = JSON.parse(event.body);
-    console.log("Received data", data);
+    
+    const { companyName, email, industry, address} = JSON.parse(event.body);
+    console.log("Received data", event.body);
 
-    const { companyName, email, industry, address, /*amount*/ } = data;
+    const customerData = customers[email];
+    if (!customerData) {
+      console.log("No customer data found for email:", email);
+      return Responses._400({
+        status: "error",
+        message: "No customer data found for this email",
+      });
+    }
+    const { id: customerId, balance } = customerData;
 
     if (!companyName || !email || !industry || !address) {
       console.log("All fields are required");
@@ -83,28 +93,29 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    // let maxPosts;
-    // if (amount === 0) {
-    //   maxPosts = 1;
-    // } else if (amount === 1000) {
-    //   maxPosts = 5;
-    // } else if (amount === 1500) {
-    //   maxPosts = Infinity;
-    // } else {
-    //   console.log("Invalid amount: ", amount);
-    //   return Responses._400({
-    //     status: "error",
-    //     message: "Invalid amount",
-    //   });
-    // }
+    let maxPosts;
+    if (balance === 0) {
+      maxPosts = 1;
+    } else if (balance === 1000) {
+      maxPosts = 5;
+    } else if (balance === 1500) {
+      maxPosts = Infinity;
+    } else {
+      console.log("Invalid balance: ", balance);
+      return Responses._400({
+        status: "error",
+        message: "Invalid balance",
+      });
+    }
 
     const newEmployer = new Employer({
       companyName,
       email,
       industry,
       address,
-      /*maxPosts*/
-      /*amount*/
+      maxPosts,
+      balance,
+      customerId,
     });
 
     await newEmployer.save();
