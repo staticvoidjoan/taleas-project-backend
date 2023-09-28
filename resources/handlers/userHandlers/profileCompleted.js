@@ -13,6 +13,7 @@ module.exports.profileComplete = async (event, context) => {
   try {
     await connectDB();
     const {
+      headline,
       education,
       experience,
       certifications,
@@ -42,6 +43,12 @@ module.exports.profileComplete = async (event, context) => {
       /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 
     // Validate education fields
+    if(!textRegex.test(headline)){
+      return Responses._400({
+        error: "Headline must be alphanumeric.",
+      });
+    }
+
     education.map((edu) => {
       if (!textRegex.test(edu.institution) || !textRegex.test(edu.degree)) {
         return Responses._400({
@@ -148,6 +155,7 @@ module.exports.profileComplete = async (event, context) => {
     });
 
     // Update user document and associate with education, experience, and certifications
+    user.headline = headline;
     user.education = educationDocuments.map((edu) => edu._id);
     user.experience = experienceDocuments.map((exp) => exp._id);
     user.certifications = certificationsDocuments.map((cert) => cert._id);

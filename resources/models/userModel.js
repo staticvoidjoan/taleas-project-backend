@@ -13,6 +13,9 @@ const User = mongoose.model(
     },
     email: {
         type: String,
+    },
+    headline: {
+        type: String,
         required: true,
     },
     education: [{

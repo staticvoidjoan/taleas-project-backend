@@ -15,6 +15,7 @@ module.exports.updateUser = async (event, context) => {
     const {
       name,
       lastname,
+      headline,
       education,
       experience,
       certifications,
@@ -67,6 +68,11 @@ module.exports.updateUser = async (event, context) => {
     if (!nameRegEx.test(lastname)) {
       console.log("Last name contains invalid characters");
       return Responses._400({ status: "error", message: "Name is not valid" });
+    }
+
+    if (!nameRegEx.test(headline)) {
+      console.log("Headline contains invalid characters");
+      return Responses._400({ status: "error", message: "Headline is not valid" });
     }
 
     if (education && education.length > 0) {
@@ -135,6 +141,7 @@ module.exports.updateUser = async (event, context) => {
 
     user.name = name;
     user.lastname = lastname;
+    user.headline = headline;
     user.education = education;
     user.experience = experience;
     user.certifications = certifications;
