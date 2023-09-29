@@ -33,7 +33,7 @@ module.exports.getPostsByCategory = async (event, context) => {
             console.log(dislikedPostIds);
             const posts = await Post.find(
             {category: category,
-            _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId");
+            _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId").populate("category");
             if (posts.length === 0) {
                 return Responses._404({message: "No posts found"})
             }
