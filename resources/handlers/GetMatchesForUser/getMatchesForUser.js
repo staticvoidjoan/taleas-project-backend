@@ -1,4 +1,4 @@
-const {connectDB} = require('../../../config/db');
+const {connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const Employer = require("../../models/employerModel");
 const mongoose = require("mongoose");
