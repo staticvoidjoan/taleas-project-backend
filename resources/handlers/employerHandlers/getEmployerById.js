@@ -6,9 +6,8 @@ const Responses = require("../apiResponses");
 module.exports.getEmployerById = async (event) => {
   console.log("Lambda function invoked");
 
+  await connectDB();
   try {
-    await connectDB();
-
     const employerId = event.pathParameters.id;
     const employer = await Employer.findOne({ _id: employerId }).select("-__v");
 

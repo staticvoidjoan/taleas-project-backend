@@ -5,9 +5,8 @@ const Responses = require("../apiResponses");
 module.exports.deleteEmployer = async (event) => {
   console.log("Lambda fucntion invoked");
 
+  await connectDB();
   try {
-    await connectDB();
-
     const employerId = event.pathParameters.id;
     console.log("Employer Id", employerId);
 

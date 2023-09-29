@@ -7,9 +7,8 @@ const Responses = require("../apiResponses");
 module.exports.likeUser = async (event, context) => {
   console.log("Lambda function invoked");
   context.callbackWaitsForEmptyEventLoop = false;
+  await connectDB();
   try {
-    await connectDB();
-
     const userId = event.queryStringParameters.id;
     const user = await User.findById(userId);
     console.log("User", user);

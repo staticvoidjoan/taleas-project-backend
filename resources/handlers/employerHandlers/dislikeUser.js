@@ -8,9 +8,8 @@ const History = require("../../models/historyModel");
 module.exports.dislikeUser = async (event, context) => {
   console.log("Lambda function invoked");
   context.callbackWaitsForEmptyEventLoop = false;
+  await connectDB();
   try {
-    await connectDB();
-
     const userId = event.queryStringParameters.id;
     const user = await User.findById(userId);
     console.log("User", user);

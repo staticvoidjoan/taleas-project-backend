@@ -8,12 +8,9 @@ const Responses = require("../apiResponses");
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
 
+  await connectDB();
   try {
-    await connectDB();
-
-    const {address, profilePhoto } = JSON.parse(
-      event.body
-    );
+    const { /*address*/ profilePhoto } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
@@ -53,18 +50,18 @@ module.exports.updateEmployer = async (event) => {
     const uploadResult = JSON.parse(invokeResult.Payload);
     console.log(uploadResult);
 
-    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
+    // const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
-    if (!addressRegex.test(address)) {
-      console.log("Invalid address format");
-      return Responses._400({
-        status: "error",
-        message:
-          "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
-      });
-    }
-    
-    employer.address = address;
+    // if (!addressRegex.test(address)) {
+    //   console.log("Invalid address format");
+    //   return Responses._400({
+    //     status: "error",
+    //     message:
+    //       "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
+    //   });
+    // }
+
+    // employer.address = address;
     employer.profilePhoto = uploadResult.body;
 
     const updatedEmployer = await employer.save();

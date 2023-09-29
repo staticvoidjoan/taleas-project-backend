@@ -6,9 +6,8 @@ const Responses = require("../apiResponses");
 module.exports.getEmployerByEmail = async (event) => {
   console.log("Lambda function invoked");
 
+  await connectDB();
   try {
-    await connectDB();
-
     const employerEmail = event.pathParameters.email;
     const employer = await Employer.findOne({ email: employerEmail }).select(
       "-__v"
