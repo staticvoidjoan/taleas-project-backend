@@ -1,7 +1,7 @@
 const {connectDB} = require('../../../config/db');
-const Post = require('../../../models/postModel');
-const Employer = require('../../../models/employerModel');
-
+const Post = require("../../models/postModel");
+const Employer = require("../../models/employerModel");
+const mongoose = require("mongoose");
 module.exports.getMatchesForUser = async (event, context) => {
 
     try {
