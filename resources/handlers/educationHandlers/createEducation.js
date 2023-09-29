@@ -11,8 +11,9 @@ module.exports.createEducation = async (event, context) => {
     const { institution, degree, startDate, endDate, description } = JSON.parse(
       event.body
     );
-
+      console.log(JSON.parse(event.body));
     if (!institution || !degree || !startDate) {
+      console.log('Institution name, degree and start date are required.')
       return Responses._400({
         error: "Institution name, degree and start date are required.",
       });
@@ -23,20 +24,24 @@ module.exports.createEducation = async (event, context) => {
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     if (!textRegex.test(institution)) {
+      console.log('Institution name must be alphanumeric.')
       return Responses._400({
         error: "Institution name must be alphanumeric.",
       });
     }
 
     if (!textRegex.test(degree)) {
+      console.log( "Degree must be alphanumeric.")
       return Responses._404({ error: "Degree must be alphanumeric." });
     }
 
     if (!textRegex.test(description)) {
+      console.log("Description must be alphanumeric.")
       return Responses._400({ error: "Description must be alphanumeric." });
     }
 
     if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
+      console.log("Start date and end date must be in YYYY-MM-DD format.")
       return Responses._400({
         error: "Start date and end date must be in YYYY-MM-DD format.",
       });

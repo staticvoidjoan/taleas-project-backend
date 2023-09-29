@@ -42,8 +42,9 @@ module.exports.likePost = async (event, context) => {
     //Update post likedBy array
     const updatePost = await Post.findOneAndUpdate(
       { _id: postId },
-      { $push: { likedBy: userId } }
+      { $addToSet: { likedBy: userId } }
     );
+    
     console.log(updatePost);
 
     return Responses._200({
