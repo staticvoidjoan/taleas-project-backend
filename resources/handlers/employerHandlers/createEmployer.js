@@ -25,7 +25,7 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    const nameRegex = /^[A-Za-z\s]+$/;
+    const nameRegex = /^[A-Za-z0-9\s]+$/;
     if (!nameRegex.test(companyName)) {
       console.log("Invalid name format");
       return Responses._400({
