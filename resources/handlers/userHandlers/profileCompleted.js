@@ -13,6 +13,8 @@ module.exports.profileComplete = async (event, context) => {
   try {
     await connectDB();
     const {
+      name,
+      lastname,
       headline,
       education,
       experience,
@@ -192,6 +194,8 @@ module.exports.profileComplete = async (event, context) => {
       });
     }
     // Update user document and associate with education, experience, and certifications
+    user.name = name;
+    user.lastname = lastname
     user.headline = headline;
     user.education = educationDocuments.map((edu) => edu._id);
     user.experience = experienceDocuments.map((exp) => exp._id);
