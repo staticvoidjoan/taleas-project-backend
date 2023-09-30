@@ -6,6 +6,8 @@ const Responses = require("../apiResponses");
 module.exports.getEmployerByEmail = async (event) => {
   console.log("Lambda function invoked");
 
+  console.time("LambdaExecutionTime");
+
   await connectDB();
   try {
     const employerEmail = event.pathParameters.email;
@@ -24,6 +26,8 @@ module.exports.getEmployerByEmail = async (event) => {
     const posts = await Post.find({ creatorId: employer._id });
 
     employer.posts = posts;
+
+    console.timeEnd("Lambda function end time");
 
     return Responses._200({
       status: "success",
