@@ -46,14 +46,18 @@ module.exports.profileComplete = async (event, context) => {
 
     // Validate education fields
     if (!textRegex.test(headline)) {
+      console.log("Headline must be alphanumeric.")
       return Responses._400({
         error: "Headline must be alphanumeric.",
       });
     }
 
+    const educationDocuments = []; // Initialize an empty array
+
     if (education && education.length > 0) {
       education.map((edu) => {
         if (!textRegex.test(edu.institution) || !textRegex.test(edu.degree)) {
+          console.log("Institution and degree must be alphanumeric.")
           return Responses._400({
             error: "Institution and degree must be alphanumeric.",
           });
@@ -63,41 +67,40 @@ module.exports.profileComplete = async (event, context) => {
           !dateRegex.test(edu.startDate) ||
           (edu.endDate && !dateRegex.test(edu.endDate))
         ) {
+          console.log("Start date and end date must be in YYYY-MM-DD format.")
           return Responses._400({
             error: "Start date and end date must be in YYYY-MM-DD format.",
           });
         }
-      });
 
-    const educationDocuments = await Promise.all(
-      education.map(async (edu) => {
         if (edu._id) {
-          // If _id exists, update the document
-          return await Education.findByIdAndUpdate(edu._id, edu, { new: true });
+          educationDocuments.push(
+            Education.findByIdAndUpdate(edu._id, edu, { new: true })
+          );
         } else {
-          // If _id does not exist, create a new document
-          return await Education.create(edu);
+          educationDocuments.push(Education.create(edu));
         }
-      })
-    );
+      });
     }
     // Validate employer and position fields
     if (experience && experience.length > 0) {
       experience.map((exp) => {
         if (!exp.employer || !exp.position) {
+          console.log("Employer and position are required.")
           return Responses._400({
             error: "Employer and position are required.",
           });
         }
 
         if (!textRegex.test(exp.employer) || !textRegex.test(exp.position)) {
+          console.log( "Employer and position must be alphanumeric.")
           return Responses._400({
             error: "Employer and position must be alphanumeric.",
           });
         }
 
-        // Validate start date and end date fields
         if (!exp.startDate) {
+          console.log("Start date is required.")
           return Responses._400({ error: "Start date is required." });
         }
 
@@ -105,13 +108,14 @@ module.exports.profileComplete = async (event, context) => {
           !dateRegex.test(exp.startDate) ||
           (exp.endDate && !dateRegex.test(exp.endDate))
         ) {
+          console.log("Start date and end date must be in YYYY-MM-DD format.")
           return Responses._400({
             error: "Start date and end date must be in YYYY-MM-DD format.",
           });
         }
 
-        // Validate description field
         if (!exp.description) {
+          console.log("Description is required.")
           return Responses._400({ error: "Description is required." });
         }
 
@@ -119,27 +123,34 @@ module.exports.profileComplete = async (event, context) => {
           return Responses._400({ error: "Description is required." });
         }
       });
-    
-    const experienceDocuments = await Promise.all(
-      experience.map(async (exp) => {
-        if (exp._id) {
-          return await Experience.findByIdAndUpdate(exp._id, exp, { new: true });
-        } else {
-          return await Experience.create(exp);
-        }
-      })
-    );
     }
 
+    const experienceDocuments = []; // Initialize an empty array
+
+    if (experience && experience.length > 0) {
+      experience.map((exp) => {
+        if (exp._id) {
+          experienceDocuments.push(
+            Experience.findByIdAndUpdate(exp._id, exp, { new: true })
+          );
+        } else {
+          experienceDocuments.push(Experience.create(exp));
+        }
+      });
+    }
+
+    // Validate certifications fields
     if (certifications && certifications.length > 0) {
       certifications.map((cert) => {
         if (!cert.title || !cert.organization || !cert.startDate) {
+          console.log("Title, organization, and startDate are required.")
           return Responses._400({
-            error: "Title, organization and startDate are required.",
+            error: "Title, organization, and startDate are required.",
           });
         }
 
         if (!textRegex.test(cert.title) || !textRegex.test(cert.organization)) {
+          console.log("Title and issuing organization must be alphanumeric.")
           return Responses._400({
             error: "Title and issuing organization must be alphanumeric.",
           });
@@ -149,27 +160,34 @@ module.exports.profileComplete = async (event, context) => {
           !dateRegex.test(cert.issueDate) ||
           (cert.expirationDate && !dateRegex.test(cert.expirationDate))
         ) {
+          console.log("Issue date and expiration date must be in YYYY-MM-DD format.")
           return Responses._400({
             error:
               "Issue date and expiration date must be in YYYY-MM-DD format.",
           });
         }
       });
-    
-    const certificationDocuments = await Promise.all(
-      certifications.map(async (cert) => {
-        if (cert._id) {
-          return await Certifications.findByIdAndUpdate(cert._id, cert, { new: true });
-        } else {
-          return await Certifications.create(cert);
-        }
-      })
-    );
     }
+
+    const certificationDocuments = []; // Initialize an empty array
+
+    if (certifications && certifications.length > 0) {
+      certifications.map((cert) => {
+        if (cert._id) {
+          certificationDocuments.push(
+            Certifications.findByIdAndUpdate(cert._id, cert, { new: true })
+          );
+        } else {
+          certificationDocuments.push(Certifications.create(cert));
+        }
+      });
+    }
+
     // Validate generalSkills, languages, and links fields
     if (generalSkills && generalSkills.length > 0) {
       generalSkills.map((skill) => {
         if (!textRegex.test(skill)) {
+          console.log("General skills must be alphanumeric.")
           return Responses._400({
             error: "General skills must be alphanumeric.",
           });
@@ -179,6 +197,7 @@ module.exports.profileComplete = async (event, context) => {
     if (languages && languages.length > 0) {
       languages.map((language) => {
         if (!textRegex.test(language)) {
+          console.log( "Languages must be alphanumeric.")
           return Responses._400({
             error: "Languages must be alphanumeric.",
           });
@@ -188,17 +207,22 @@ module.exports.profileComplete = async (event, context) => {
     if (links && links.length > 0) {
       links.map((link) => {
         if (!urlRegex.test(link)) {
+          console.log("Links must be valid URLs.")
           return Responses._400({ error: "Links must be valid URLs." });
         }
       });
     }
     // Update user document and associate with education, experience, and certifications
     user.name = name;
-    user.lastname = lastname
+    user.lastname = lastname;
     user.headline = headline;
-    user.education = educationDocuments.map((edu) => edu._id);
-    user.experience = experienceDocuments.map((exp) => exp._id);
-    user.certifications = certificationDocuments.map((cert) => cert._id);
+    user.education = educationDocuments.map((edu) => (edu._id ? edu._id : edu));
+    user.experience = experienceDocuments.map((exp) =>
+      exp._id ? exp._id : exp
+    );
+    user.certifications = certificationDocuments.map((cert) =>
+      cert._id ? cert._id : cert
+    );
     user.generalSkills = generalSkills;
     user.languages = languages;
     user.links = links;
@@ -207,7 +231,7 @@ module.exports.profileComplete = async (event, context) => {
     // Save the user document
     const updatedUser = await user.save();
 
-    return Responses._200({ status: "success", updatedUser });
+    return Responses._200({ status: "success", updatedUser })
   } catch (error) {
     console.error("Something went wrong", error);
     return Responses._500({
