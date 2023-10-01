@@ -8,10 +8,10 @@ const Certifications = new mongoose.Schema({
         type: String,
     },
     issueDate: {
-        type: Date,
+        type: String,
     },
     expirationDate: {
-        type: Date,
+        type: String,
         required: false,
     },
     description: {
