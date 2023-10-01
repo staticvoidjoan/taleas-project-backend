@@ -68,7 +68,7 @@ module.exports.profileComplete = async (event, context) => {
           });
         }
       });
-    }
+
     const educationDocuments = await Promise.all(
       education.map(async (edu) => {
         if (edu._id) {
@@ -80,7 +80,7 @@ module.exports.profileComplete = async (event, context) => {
         }
       })
     );
-
+    }
     // Validate employer and position fields
     if (experience && experience.length > 0) {
       experience.map((exp) => {
@@ -119,7 +119,6 @@ module.exports.profileComplete = async (event, context) => {
           return Responses._400({ error: "Description is required." });
         }
       });
-    }
     
     const experienceDocuments = await Promise.all(
       experience.map(async (exp) => {
@@ -130,6 +129,7 @@ module.exports.profileComplete = async (event, context) => {
         }
       })
     );
+    }
 
     if (certifications && certifications.length > 0) {
       certifications.map((cert) => {
@@ -155,7 +155,6 @@ module.exports.profileComplete = async (event, context) => {
           });
         }
       });
-    }
     
     const certificationDocuments = await Promise.all(
       certifications.map(async (cert) => {
@@ -166,7 +165,7 @@ module.exports.profileComplete = async (event, context) => {
         }
       })
     );
-
+    }
     // Validate generalSkills, languages, and links fields
     if (generalSkills && generalSkills.length > 0) {
       generalSkills.map((skill) => {
