@@ -38,7 +38,7 @@ module.exports.createUser = async (event, context) => {
       });
     }
 
-    const existingEmail = await User.findOne({ email });
+    const existingEmail = await User.findOne({ email: email });
     if (existingEmail) {
       console.log("Email already exists");
       return Responses._409({

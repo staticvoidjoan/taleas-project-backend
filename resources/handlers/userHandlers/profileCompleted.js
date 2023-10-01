@@ -32,7 +32,7 @@ module.exports.profileComplete = async (event, context) => {
 let uploadResult;
 
 // Check if profilePhoto is a base64 string
-if (profilePhoto.startsWith('data:image')) {
+if (profilePhoto && profilePhoto.startsWith('data:image')) {
   const invokeParams = {
     FunctionName:
       "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
@@ -41,7 +41,7 @@ if (profilePhoto.startsWith('data:image')) {
   const invokeResult = await lambda.invoke(invokeParams).promise();
   uploadResult = JSON.parse(invokeResult.Payload);
   console.log(uploadResult);
-} else {
+} else if(profilePhoto) {
   const imageUrlWithoutQuotes = profilePhoto.replace(/"/g, '')
   uploadResult = imageUrlWithoutQuotes;
 }
@@ -250,7 +250,9 @@ if (profilePhoto.startsWith('data:image')) {
     user.generalSkills = generalSkills;
     user.languages = languages;
     user.links = links;
-    user.profilePhoto = uploadResult.body;
+    if (uploadResult && uploadResult.body) {
+      user.profilePhoto = uploadResult.body;
+    } 
 
     // Save the user document
     const updatedUser = await user.save();
