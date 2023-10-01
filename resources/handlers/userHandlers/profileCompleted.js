@@ -28,15 +28,23 @@ module.exports.profileComplete = async (event, context) => {
     const userId = event.pathParameters.id;
     const user = await User.findOne({ _id: userId });
 
-      const bucketName = "userprofilephotobucket";
-      const invokeParams = {
-        FunctionName:
-          "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
-        Payload: JSON.stringify({ profilePhoto, bucketName }),
-      };
-      const invokeResult = await lambda.invoke(invokeParams).promise();
-      const uploadResult = JSON.parse(invokeResult.Payload);
-      console.log(uploadResult);
+    const bucketName = "userprofilephotobucket";
+let uploadResult;
+
+// Check if profilePhoto is a base64 string
+if (profilePhoto.startsWith('data:image')) {
+  const invokeParams = {
+    FunctionName:
+      "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
+    Payload: JSON.stringify({ profilePhoto, bucketName }),
+  };
+  const invokeResult = await lambda.invoke(invokeParams).promise();
+  uploadResult = JSON.parse(invokeResult.Payload);
+  console.log(uploadResult);
+} else {
+  const imageUrlWithoutQuotes = profilePhoto.replace(/"/g, '')
+  uploadResult = imageUrlWithoutQuotes;
+}
 
     // Regular expressions for validation
     const textRegex = /^[a-zA-Z0-9\s,.'-]*$/;
