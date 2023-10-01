@@ -51,7 +51,7 @@ module.exports.profileComplete = async (event, context) => {
       });
     }
 
-    if (education.length > 0) {
+    if (education && education.length > 0) {
       education.map((edu) => {
         if (!textRegex.test(edu.institution) || !textRegex.test(edu.degree)) {
           return Responses._400({
@@ -82,7 +82,7 @@ module.exports.profileComplete = async (event, context) => {
     );
 
     // Validate employer and position fields
-    if (experience.length > 0) {
+    if (experience && experience.length > 0) {
       experience.map((exp) => {
         if (!exp.employer || !exp.position) {
           return Responses._400({
@@ -131,7 +131,7 @@ module.exports.profileComplete = async (event, context) => {
       })
     );
 
-    if (certifications.length > 0) {
+    if (certifications && certifications.length > 0) {
       certifications.map((cert) => {
         if (!cert.title || !cert.organization || !cert.startDate) {
           return Responses._400({
@@ -168,7 +168,7 @@ module.exports.profileComplete = async (event, context) => {
     );
 
     // Validate generalSkills, languages, and links fields
-    if (generalSkills.length > 0) {
+    if (generalSkills && generalSkills.length > 0) {
       generalSkills.map((skill) => {
         if (!textRegex.test(skill)) {
           return Responses._400({
@@ -177,7 +177,7 @@ module.exports.profileComplete = async (event, context) => {
         }
       });
     }
-    if (languages.length > 0) {
+    if (languages && languages.length > 0) {
       languages.map((language) => {
         if (!textRegex.test(language)) {
           return Responses._400({
@@ -186,7 +186,7 @@ module.exports.profileComplete = async (event, context) => {
         }
       });
     }
-    if (links.length > 0) {
+    if (links && links.length > 0) {
       links.map((link) => {
         if (!urlRegex.test(link)) {
           return Responses._400({ error: "Links must be valid URLs." });
