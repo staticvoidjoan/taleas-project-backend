@@ -45,6 +45,8 @@ module.exports.likeUser = async (event, context) => {
     if (!post.recLikes.includes(userId)) {
       // Add the employer's ID to the recLikes array
       await post.recLikes.push(userId);
+
+      await Post.updateOne({ _id: post._id }, { $pull: { likedBy: user._id } });
       await post.save();
     }
 
