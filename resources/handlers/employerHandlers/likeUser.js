@@ -47,6 +47,7 @@ module.exports.likeUser = async (event, context) => {
       await post.recLikes.push(userId);
 
       await Post.updateOne({ _id: post._id }, { $pull: { likedBy: user._id } });
+      console.log("User removed from liked array successfully");
       await post.save();
     }
 
