@@ -25,31 +25,24 @@ module.exports.createEmployer = async (event) => {
       });
     }
 
-    const nameRegex = /^[A-Za-z0-9\s]+$/;
+    const nameRegex = /^[A-Za-z0-9\s.]+$/;
     if (!nameRegex.test(companyName)) {
       console.log("Invalid name format");
       return Responses._400({
         status: "error",
         message:
-          "Invalid company name format! Company name should only contain letters and symbols",
+          "Invalid company name format! Company name should only contain letters, numbers, spaces, and periods",
       });
     }
 
-    const industryEnum = [
-      "IT",
-      "Healthcare",
-      "Finance",
-      "Education",
-      "Manufacturing",
-    ];
     const industryNameRegex = /^[A-Za-z\s]+$/;
 
-    if (!industryNameRegex.test(industry) || !industryEnum.includes(industry)) {
+    if (!industryNameRegex.test(industry)) {
       console.log("Invalid industry");
       return Responses._400({
         status: "error",
         message:
-          "Invalid industry field! Industry should be only from IT, Healthacare, Finance, Education and Manufacturing.",
+          "Invalid industry field! Industry should contain only letters and spaces.",
       });
     }
 
