@@ -1,16 +1,16 @@
 const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
-const AWS = require('aws-sdk');
+const AWS = require("aws-sdk");
 const lambda = new AWS.Lambda();
+const s3 = new AWS.S3();
+const Responses = require("../apiResponses");
 
 module.exports.updateEmployer = async (event) => {
   console.log("Lambda function invoked");
 
+  await connectDB();
   try {
-    await connectDB();
-    console.log("Connected to the database");
-
-    const { companyName, address, industry, profilePhoto } = JSON.parse(event.body);
+    const { /*address*/ profilePhoto } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
@@ -19,14 +19,14 @@ module.exports.updateEmployer = async (event) => {
 
     if (!employer) {
       console.log("Employer not found");
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ error: "Employer not found" }),
-      };
+      return Responses._404({
+        status: "error",
+        message: "Employer is not found anywhere",
+      });
     }
 
-    const bucketName = "employers";
-    if (employer.profilePhoto) {
+    const bucketName = "employerprofileimagebucket";
+    if (employer.profilePhoto !== undefined) {
       const deleteParams = {
         Bucket: bucketName,
         Key: employer.profilePhoto,
@@ -42,63 +42,42 @@ module.exports.updateEmployer = async (event) => {
     }
 
     const invokeParams = {
-      FunctionName: 'TaleasProjectBackendStack-UploadImageuploadImage1A-vvXaTPiuZkAw', 
+      FunctionName:
+        "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
       Payload: JSON.stringify({ profilePhoto, bucketName }),
     };
     const invokeResult = await lambda.invoke(invokeParams).promise();
     const uploadResult = JSON.parse(invokeResult.Payload);
     console.log(uploadResult);
-    const nameRegex = /^[A-Za-z\s]+$/;
-    if (!nameRegex.test(companyName)) {
-      console.log("Invalid name format");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "Invalid name format! The company name should only contain letters and spaces",
-        }),
-      };
-    }
 
-    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
+    // const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
-    if (!addressRegex.test(address)) {
-      console.log("Invalid address format");
-      return {
-        statusCode: 400,
-        body: JSON.stringify({
-          error:
-            "Invalid address format! Address should only contain letters, numbers, spaces, and common punctuation.",
-        }),
-      };
-    }
+    // if (!addressRegex.test(address)) {
+    //   console.log("Invalid address format");
+    //   return Responses._400({
+    //     status: "error",
+    //     message:
+    //       "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
+    //   });
+    // }
 
-    employer.companyName = companyName;
-    employer.address = address;
-    employer.industry = industry;
-    employer.profilePhoto = profilePhoto;
+    // employer.address = address;
+    employer.profilePhoto = uploadResult.body;
 
     const updatedEmployer = await employer.save();
 
     console.log("Employer updated successfully", updatedEmployer);
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "OPTIONS, POST, GET, PUT, DELETE",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify(updatedEmployer),
-    };
-
+    return Responses._200({
+      status: "success",
+      message: "Employer updated successfully",
+      employer,
+    });
   } catch (error) {
     console.log("An error happened", error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({
-        error: "An error occurred while updating the employer",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message:
+        "An error occurred while updating the employer, check the logs for more information",
+    });
   }
 };

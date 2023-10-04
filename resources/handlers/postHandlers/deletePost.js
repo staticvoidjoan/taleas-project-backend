@@ -1,5 +1,6 @@
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const Responses = require("../apiResponses");
 
 
 module.exports.deletePost = async (event, context) => {
@@ -9,25 +10,8 @@ module.exports.deletePost = async (event, context) => {
     try{
 
         const post = await Post.findByIdAndDelete(id);
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(post)
-        }
-
-
+        return Responses._200({message: "Post deleted successfully", post})
     }catch(error){
-
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
+        return Responses._500({message: "Internal server error"})
     }
 }

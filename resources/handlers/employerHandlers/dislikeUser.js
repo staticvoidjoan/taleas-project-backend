@@ -3,8 +3,9 @@ const User = require("../../models/userModel");
 const Employer = require("../../models/employerModel");
 const Post = require("../../models/postModel");
 const Responses = require("../apiResponses");
+const History = require("../../models/historyModel");
 
-module.exports.likeUser = async (event, context) => {
+module.exports.dislikeUser = async (event, context) => {
   console.log("Lambda function invoked");
   context.callbackWaitsForEmptyEventLoop = false;
   await connectDB();
@@ -33,36 +34,20 @@ module.exports.likeUser = async (event, context) => {
       });
     }
 
-    // Check if the user has liked the post
-    if (!post.likedBy.includes(user._id)) {
-      return Responses._400({
-        status: "error",
-        message: "The user has not liked the post",
-      });
-    }
+    await Post.findByIdAndUpdate(postId, { $pull: { likedBy: userId } });
 
-    // Check if the employer has not already liked the user
-    if (!post.recLikes.includes(userId)) {
-      // Add the employer's ID to the recLikes array
-      await post.recLikes.push(userId);
-
-      await Post.updateOne({ _id: post._id }, { $pull: { likedBy: user._id } });
-      console.log("User removed from liked array successfully");
-      await post.save();
-    }
-
-    console.log("User liked by employer successfully");
+    console.log("User disliked by employer successfully");
 
     return Responses._200({
       status: "success",
-      message: "User liked successfully",
+      message: "User disliked successfully",
     });
   } catch (error) {
     console.error("Something went wrong", error);
     return Responses._500({
       status: "error",
       message:
-        "An error occurred while liking the user, check the logs for more information",
+        "An error occurred while disliking the user, check the logs for more information",
     });
   }
 };

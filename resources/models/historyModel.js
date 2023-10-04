@@ -15,7 +15,8 @@ const History = new mongoose.Schema({
     dislikedPosts: [{
         type: mongoose.Schema.Types.ObjectId,
         required: false,
-        ref: "Post"
+        ref: "Post",
+        expires: 60
     }]
 })
 

@@ -32,7 +32,9 @@ const Post = new mongoose.Schema({
   description: {
     type: String,
     required: true
-  }
+  }, 
+},{
+  timestamps: true, // This adds createdAt and updatedAt fields
 });
 
 module.exports = mongoose.model("Post", Post);

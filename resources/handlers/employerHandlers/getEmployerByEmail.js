@@ -3,23 +3,25 @@ const Employer = require("../../models/employerModel");
 const Post = require("../../models/postModel");
 const Responses = require("../apiResponses");
 
-module.exports.getEmployerById = async (event) => {
+module.exports.getEmployerByEmail = async (event) => {
   console.log("Lambda function invoked");
 
   await connectDB();
   try {
-    const employerId = event.pathParameters.id;
-    const employer = await Employer.findOne({ _id: employerId }).select("-__v");
+    const employerEmail = event.pathParameters.email;
+    const employer = await Employer.findOne({ email: employerEmail }).select(
+      "-__v"
+    );
 
     if (!employer) {
       console.log("Employer not found");
       return Responses._404({
         status: "error",
-        message: "Employer is not found anywhere",
+        message: "Employer is not found",
       });
     }
 
-    const posts = await Post.find({ creatorId: employerId });
+    const posts = await Post.find({ creatorId: employer._id });
 
     employer.posts = posts;
 

@@ -3,18 +3,15 @@ const mongoose = require("mongoose");
 const Experience = new mongoose.Schema({
     employer: {
         type: String,
-        required: true, 
     }, 
     position: {
         type: String,
-        required: true, 
     },
     startDate: {
-        type: Date,
-        required: true, 
+        type: String,
     },
     endDate: {
-        type: Date,
+        type: String,
         required: false, 
     },
     description: {

@@ -1,6 +1,7 @@
 const { connectDB } = require("../../config/dbConfig");
 const User = require("../../models/userModel");
 const Education = require("../../models/educationModel");
+const Responses = require("../apiResponses");
 
 module.exports.createEducation = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -10,72 +11,42 @@ module.exports.createEducation = async (event, context) => {
     const { institution, degree, startDate, endDate, description } = JSON.parse(
       event.body
     );
-
+      console.log(JSON.parse(event.body));
     if (!institution || !degree || !startDate) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          error:
-            "Institution name, degree and start date are required.",
-        }),
-      };
+      console.log('Institution name, degree and start date are required.')
+      return Responses._400({
+        error: "Institution name, degree and start date are required.",
+      });
     }
 
     // Regular expressions for validation
-    const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
+    const textRegex = /^[a-zA-Z0-9\s,.'-]*$/;
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
     if (!textRegex.test(institution)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          error: "Institution name must be alphanumeric.",
-        }),
-      };
+      console.log('Institution name must be alphanumeric.')
+      return Responses._400({
+        error: "Institution name must be alphanumeric.",
+      });
     }
 
     if (!textRegex.test(degree)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({ error: "Degree must be alphanumeric." }),
-      };
+      console.log( "Degree must be alphanumeric.")
+      return Responses._404({ error: "Degree must be alphanumeric." });
     }
 
     if (!textRegex.test(description)) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({ error: "Description must be alphanumeric." }),
-      };
+      console.log("Description must be alphanumeric.")
+      return Responses._400({ error: "Description must be alphanumeric." });
     }
 
     if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          error: "Start date and end date must be in YYYY-MM-DD format.",
-        }),
-      };
+      console.log("Start date and end date must be in YYYY-MM-DD format.")
+      return Responses._400({
+        error: "Start date and end date must be in YYYY-MM-DD format.",
+      });
     }
+
     const newEducation = new Education({
       institution,
       degree,
@@ -89,26 +60,12 @@ module.exports.createEducation = async (event, context) => {
       { _id: userId },
       { $push: { education: savedEducation._id } }
     );
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({ savedEducation, updateUser }),
-    };
+    return Responses._200({status: "success", savedEducation });
   } catch (error) {
     console.error("Something went wrong", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        status: "error",
-        message: "An error occurred creating education",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message: "An error occurred creating education",
+    });
   }
 };

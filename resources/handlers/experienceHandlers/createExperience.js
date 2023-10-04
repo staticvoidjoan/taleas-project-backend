@@ -1,77 +1,49 @@
 const { connectDB } = require("../../config/dbConfig");
 const User = require("../../models/userModel");
 const Experience = require("../../models/experienceModel");
+const Responses = require("../apiResponses");
 
 module.exports.createExperience = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
     const userId = event.pathParameters.id;
-    const { empolyer, position, startDate, endDate, description } = JSON.parse(
+    const { employer, position, startDate, endDate, description } = JSON.parse(
       event.body
     );
 
-    if (!empolyer || !position || !startDate) {
-      return {
-        statusCode: 400,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-        },
-        body: JSON.stringify({
-          error:
-            "Employer, position and start date are required.",
-        }),
-      };
+    if (!employer || !position || !startDate) {
+      return Responses._400({
+        error: "Employer, position and start date are required.",
+      });
     }
 
     // Regular expressions for validation
-    const textRegex = /^[a-zA-Z0-9\s,'-]*$/;
+    const textRegex = /^[a-zA-Z0-9\s,.'-]*$/;
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
-    if (!textRegex.test(empolyer) || !textRegexRegex.test(position)) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({
-            error: "Employer and position must be alphanumeric.",
-          }),
-        };
-      }
+    if (!textRegex.test(employer) || !textRegex.test(position)) {
+      return Responses._400({
+        error: "Employer and position must be alphanumeric.",
+      });
+    }
 
-      if (!dateRegex.test(startDate) || (exp.endDate && !dateRegex.test(endDate))) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({
-            error: "Start date and end date must be in YYYY-MM-DD format.",
-          }),
-        };
-      }
+    if (!dateRegex.test(startDate) || (endDate && !dateRegex.test(endDate))) {
+      return Responses._400({
+        error: "Start date and end date must be in YYYY-MM-DD format.",
+      });
+    }
 
-      if (!textRegex.test(description)) {
-        return {
-          statusCode: 400,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": true,
-          },
-          body: JSON.stringify({ error: "Description is required." }),
-        };
-      }
+    if (!textRegex.test(description)) {
+      return Responses._400({ error: "Description is required." });
+    }
 
     const experience = new Experience({
-      empolyer,
+      employer,
       position,
       startDate,
       endDate,
-      description
+      description,
     });
 
     const savedExperience = await experience.save();
@@ -79,26 +51,12 @@ module.exports.createExperience = async (event, context) => {
       { _id: userId },
       { $push: { experience: savedExperience._id } }
     );
-    return {
-      statusCode: 200,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({ savedExperience, updateUser }),
-    };
+    return Responses._200({status:"success", savedExperience });
   } catch (error) {
     console.error("Something went wrong", error);
-    return {
-      statusCode: 500,
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
-      },
-      body: JSON.stringify({
-        status: "error",
-        message: "An error occurred creating experience",
-      }),
-    };
+    return Responses._500({
+      status: "error",
+      message: "An error occurred creating experience",
+    });
   }
 };

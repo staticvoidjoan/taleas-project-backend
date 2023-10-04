@@ -5,13 +5,13 @@ const Experience = require("../../models/experienceModel");
 const Certifications = require("../../models/certeficationsModel");
 const Responses = require("../apiResponses");
 
-module.exports.getUser = async (event, context) => {
+module.exports.getUserByEmail = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
 
-    const userId = event.pathParameters.id;
-    const user = await User.findOne({ _id: userId })
+    const userEmail = event.pathParameters.email;
+    const user = await User.findOne({ email: userEmail })
       .select("-__v")
       .populate("education")
       .populate("experience")

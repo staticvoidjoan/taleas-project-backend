@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Category = require("../../models/categoryModel");
 const User = require("../../models/userModel");
 const Employer = require("../../models/employerModel");
-
+const Responses = require("../apiResponses");
 module.exports.getPostsByCategory = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
     await connectDB();
@@ -13,65 +13,32 @@ module.exports.getPostsByCategory = async (event, context) => {
     try {
 
         const { category } = event.pathParameters; 
+        const id = event.queryStringParameters.id;
 
-        if(!mongoose.Types.ObjectId.isValid(category)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid category id"
-                })
+        console.log("category", category);
+        console.log("user id", id);
+
+            if(!mongoose.Types.ObjectId.isValid(category)) {
+                return Responses._400({message: "Please provide a valid category id"})
             }
-        }
-        //when provided with a user id, get the user history and get the liked and disliked posts
-        // const userHistory = History.findOne({user: id});
-        // const likedPostIds = userHistory.likedPosts;
-        // const dislikedPostIds = userHistory.dislikedPosts;
-        //find post where category is equal to category id and id of the post is not in the liked or disliked posts from the user history
-        // const posts = await Post.find(
-        //     {category: category, 
-        //     _id: { $nin: [...likedPostIds, ...dislikedPostIds] }
-        // })
-        const posts = await Post.find({category: category})
-        .populate("likedBy")
-        .populate("recLikes")
-        .populate("creatorId");
-        if (posts.length === 0) {
-            return {
-                statusCode: 404, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "No posts found"
-                })
+            if(!mongoose.Types.ObjectId.isValid(id)) {
+                return Responses._400({message: "Please provide a valid user id"})
             }
-        }
-
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(posts)
-        }
-
-
-    }catch(error) {
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
-    }
+            //when provided with a user id, get the user history and get the liked and disliked posts
+            const userHistory = await History.findOne({user: id});
+            console.log(userHistory)
+            const likedPostIds = userHistory?.likedPosts || [];
+            const dislikedPostIds = userHistory?.dislikedPosts || [];
+            console.log(likedPostIds);
+            console.log(dislikedPostIds);
+            const posts = await Post.find(
+            {category: category,
+            _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId").populate("category");
+            if (posts.length === 0) {
+                return Responses._404({message: "No posts found"})
+            }
+            return Responses._200({posts})
+            }catch(error) {
+                return Responses._500({message: "Internal server error"})
+            }
 }

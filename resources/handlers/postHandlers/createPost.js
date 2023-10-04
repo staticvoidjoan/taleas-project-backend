@@ -1,7 +1,8 @@
 const {connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
+const Employer = require("../../models/employerModel");
 const mongoose = require("mongoose");
-
+const Responses = require("../apiResponses")
 module.exports.createPost = async (event, context) => {
     context.callbackWaitsForEmptyEventLoop = false;
 
@@ -12,44 +13,21 @@ module.exports.createPost = async (event, context) => {
         const {category, position , requirements, description} = JSON.parse(event.body);
         console.log(event.body);
         if(!category || !position || !requirements || !description ) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide all the required fields"
-                })
-            }
+            return Responses._400({message: "Please provide all the required fields"})
         }
         console.log("1 here");
         if(!mongoose.Types.ObjectId.isValid(creatorId)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error",
-                    error: "Please provide a valid creator id"
-                })
-            }
+            return Responses._400({message: "Please provide a valid creator id"})
         }
         if(!mongoose.Types.ObjectId.isValid(category)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error",
-                    error: "Please provide a valid category id"
-                })
-            }
+            return Responses._400({message: "Please provide a valid category id"})
+        }
+        const employer = await Employer.findById(creatorId);
+        if(!employer) {
+            return Responses._404({message: "Employer not found"})
+        }
+        if(employer.postsMade >= employer.maxPosts) {
+            return Responses._400({message: "You have reached the maximum number of posts"})
         }
         const newPost = new Post({
             category,
@@ -60,23 +38,11 @@ module.exports.createPost = async (event, context) => {
         });
         console.log(newPost);
         await newPost.save();
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(newPost)
-        }
+        employer.postsMade += 1;
+        await employer.save();
+        return Responses._200({message: "Post created successfully", newPost})
     }catch(error) {
         console.log(error);
-        return {
-            statusCode: 500, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
-            },
-            body : JSON.stringify(error)
-        }
+        return Responses._500({message: "Internal server error"})
     }
 }

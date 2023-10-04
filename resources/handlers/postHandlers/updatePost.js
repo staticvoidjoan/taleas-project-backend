@@ -1,155 +1,52 @@
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const mongoose = require("mongoose");
-
-
+const Responses = require("../apiResponses");
 module.exports.updatePost = async (event, context) => {
-
     context.callbackWaitsForEmptyEventLoop = false;
-    await connectDB();
-    try{
-        const {id} = event.pathParameters;
-        if(!mongoose.Types.ObjectId.isValid(id)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify(
-                    {
-                        status: "error", 
-                        error: "Please provide a valid id"
-                    }
-                )
-            }
-        }
-        const postExists = await Post.findById(id);
-        if(!postExists) {
-            return {
-                statusCode: 404,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                }, 
-                body:JSON.stringify( {
-                    status: "error",
-                    error: "Post not found"
-                })
-            }
-        }
-        const {category, position, requirements, description} = JSON.parse(event.body);
-        if(!category  || !position || !requirements ) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify( {
-                    status: "error", 
-                    error: "Please provide all the required fields"
-                })
-            }
-        }
-        if(!mongoose.Types.ObjectId.isValid(creatorId)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify( {
-                    status: "error", 
-                    error: "Please provide a valid creator id"
-                })
-            }
-        }
-        if(!mongoose.Types.ObjectId.isValid(category)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid category id"
-                })
-            }
-        }
-        const regex = /^[a-zA-Z]+$/;
-        for (let requirement of requirements) {
-            if(!regex.test(requirement)) {
-                return {
-                    statusCode: 400, 
-                    headers : {
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Credentials": true,
-                    },
-                    body : JSON.stringify({
-                        status: "error", 
-                        error: "Please provide a valid requirement"
-                    })
-                }
-            }
+
+    try {
+        await connectDB();
+
+        const { id } = event.pathParameters;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return Responses._400({ message: "Please provide a valid post id" });
         }
 
-        if(!regex.test(description)) {
-            return {
-                statusCode: 400, 
-                headers : {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body : JSON.stringify({
-                    status: "error", 
-                    error: "Please provide a valid requirement"
-                })
-            }
+        const postExists = await Post.findById(id);
+
+        if (!postExists) {
+            return Responses._404({ message: "Post not found" });
         }
-        if(!regex.test(position)) {
-            return {
-                statusCode: 400,
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                    "Access-Control-Allow-Credentials": true,
-                },
-                body: JSON.stringify({
-                    status: "error",
-                    error: "Please provide a valid position"
-                })
-            }
+
+        const {
+            category,
+            position,
+            requirements,
+            description,
+        } = JSON.parse(event.body);
+
+        if (!category || !position || !requirements) {
+            return Responses._400({message: "Please provide all the required fields"});
         }
+
+        const { id: creatorId } = postExists; // Use the creatorId from the existing post
 
         const updatedPost = await Post.findByIdAndUpdate(
-            id, 
-            {category, 
-             creatorId, 
-             position, 
-             requirements, 
-             description
-            }, 
-             {new: true});
-
-        return {
-            statusCode: 200, 
-            headers : {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Credentials": true,
+            id,
+            {
+                category,
+                creatorId,
+                position,
+                requirements,
+                description,
             },
-            body : JSON.stringify(updatedPost)
-        }
-    }catch(error) {
+            { new: true }
+        );
 
-        return {
-            statusCode: 500, 
-            headers: {
-                "Access-Control-Allow-Origin": "*", 
-                "Access-Control-Allow-Credentials": true,
-            }, 
-            body: JSON.stringify(error)
-        }
-
+        return Responses._200({ message: "Post updated successfully", updatedPost });
+    } catch (error) {
+        return Responses._500({ message: "Internal server error" });
     }
-}
+};
