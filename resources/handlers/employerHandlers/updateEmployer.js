@@ -10,7 +10,7 @@ module.exports.updateEmployer = async (event) => {
 
   await connectDB();
   try {
-    const { /*address*/ profilePhoto } = JSON.parse(event.body);
+    const { address, industry, profilePhoto } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
@@ -50,23 +50,35 @@ module.exports.updateEmployer = async (event) => {
     const uploadResult = JSON.parse(invokeResult.Payload);
     console.log(uploadResult);
 
-    // const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
+    const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
-    // if (!addressRegex.test(address)) {
-    //   console.log("Invalid address format");
-    //   return Responses._400({
-    //     status: "error",
-    //     message:
-    //       "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
-    //   });
-    // }
+    if (!addressRegex.test(address)) {
+      console.log("Invalid address format");
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid address format. Address can only contain letters, numbers, spaces, and the following special characters: , . ' -",
+      });
+    }
 
-    // employer.address = address;
-    employer.profilePhoto = uploadResult.body;
+    const industryNameRegex = /^[A-Za-z\s]+$/;
 
-    const updatedEmployer = await employer.save();
+    if (!industryNameRegex.test(industry)) {
+      console.log("Invalid industry");
+      return Responses._400({
+        status: "error",
+        message:
+          "Invalid industry field! Industry should contain only letters and spaces.",
+      });
+    }
 
-    console.log("Employer updated successfully", updatedEmployer);
+    employer.address = address,
+    employer.industry = industry,
+    employer.profilePhoto = uploadResult.body
+
+    const newEmployer = await employer.save();
+    console.log("Employer updated successfully", newEmployer);
+
     return Responses._200({
       status: "success",
       message: "Employer updated successfully",

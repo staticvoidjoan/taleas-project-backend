@@ -16,15 +16,15 @@
 //       });
 //     }
 
-//     const nameRegex = /^[A-Za-z0-9\s.]+$/;
-//     if (!nameRegex.test(companyName)) {
-//       console.log("Invalid name format");
-//       return Responses._400({
-//         status: "error",
-//         message:
-//           "Invalid company name format! Company name should only contain letters, numbers, spaces, and periods",
-//       });
-//     }
+    // const nameRegex = /^[A-Za-z0-9\s.]+$/;
+    // if (!nameRegex.test(companyName)) {
+    //   console.log("Invalid name format");
+    //   return Responses._400({
+    //     status: "error",
+    //     message:
+    //       "Invalid company name format! Company name should only contain letters, numbers, spaces, and periods",
+    //   });
+    // }
 
 //     const industryNameRegex = /^[A-Za-z\s]+$/;
 

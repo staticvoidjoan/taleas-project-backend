@@ -9,14 +9,14 @@ const EmployerSchema = new mongoose.Schema({
     type:String,
     required: true
   },
-  // industry: {
-  //   type: String,
-  //   required: true,
-  // },
-  // address: {
-  //   type: String,
-  //   required: true,
-  // },
+  industry: {
+    type: String,
+    required: false,
+  },
+  address: {
+    type: String,
+    required: false,
+  },
   profilePhoto: {
     type: String,
   },

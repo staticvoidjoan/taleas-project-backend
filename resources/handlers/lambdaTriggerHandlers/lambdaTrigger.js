@@ -4,7 +4,7 @@ const { connectDB } = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
 
-module.exports.lambdaTrigger = async (event) => {
+module.exports.lambdaTrigger =  async (event, context, callback)  => {
   console.log("Lambda functions is triggered");
   await connectDB();
 
@@ -13,7 +13,7 @@ module.exports.lambdaTrigger = async (event) => {
       var isEmployee = event.request.userAttributes["custom:isEmployee"];
       if (isEmployee === "true") {
         var name = event.request.userAttributes["given_name"];
-        var lastname =  event.request.userAttributes["family_name"];
+        var lastname = event.request.userAttributes["family_name"];
         var email = event.request.userAttributes["email"];
         var dateOfBirth = event.request.userAttributes["birthdate"];
 
@@ -22,36 +22,34 @@ module.exports.lambdaTrigger = async (event) => {
         const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!nameRegEx.test(name)) {
-          console.log("Full name contains invalid characters");
-          return Responses._400({
-            status: "error",
-            message: "Full name is not valid",
-          });
+          console.log("Name contains invalid characters");
+          callback(
+            null,
+            buildResponse(400, "Name does not contain valid characters")
+          );
+          return;
         }
 
         if (!nameRegEx.test(lastname)) {
-          console.log("Full name contains invalid characters");
-          return Responses._400({
-            status: "error",
-            message: "Full name is not valid",
-          });
+          console.log("Lastname contains invalid characters");
+          callback(
+            null,
+            buildResponse(400, "Name does not contain valid characters")
+          );
+          return;
         }
 
         if (!emailRegEx.test(email)) {
           console.log("Email is not valid");
-          return Responses._400({
-            status: "error",
-            message: "Email is not valid",
-          });
+          callback(null, buildResponse(400, "Email is not valid"));
+          return;
         }
 
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
           console.log("Email already exists");
-          return Responses._400({
-            status: "error",
-            message: "Email already exists! Try another one.",
-          });
+          callback(null, buildResponse(400, "Email already exists"));
+          return;
         }
 
         const user = new User({
@@ -63,12 +61,7 @@ module.exports.lambdaTrigger = async (event) => {
         await user.save();
         console.log("User saved to the database", user);
         console.log("Is mployee: ", isEmployee);
-
-        return Responses._200({
-          status: "success",
-          message: "User created successfully",
-          user,
-        });
+        callback(null, buildResponse(200, "User created successfully"));
       } else {
         var companyName = event.request.userAttributes["given_name"];
         var email = event.request.userAttributes["email"];
@@ -79,27 +72,21 @@ module.exports.lambdaTrigger = async (event) => {
 
         if (!nameRegEx.test(companyName)) {
           console.log("Company name contains invalid characters");
-          return Responses._400({
-            status: "error",
-            message: "Company name is not valid",
-          });
+          callback(null,buildResponse(400, "Company name does not contain valid characters"));
+          return;
         }
 
         if (!emailRegEx.test(email)) {
           console.log("Email is not valid");
-          return Responses._400({
-            status: "error",
-            message: "Email is not valid",
-          });
+          callback(null, buildResponse(400, "Email is not valid"));
+          return;
         }
 
         const existingEmployer = await Employer.findOne({ email: email });
         if (existingEmployer) {
           console.log("Email already exists");
-          return Responses._400({
-            status: "error",
-            message: "Email already exists! Try another one.",
-          });
+          callback(null, buildResponse(400, ""));
+          return;
         }
 
         const newEmployer = new Employer({
@@ -110,21 +97,23 @@ module.exports.lambdaTrigger = async (event) => {
         await newEmployer.save();
         console.log("Employer saved to the database", newEmployer);
         console.log("Is employee: ", isEmployee);
-
-        return Responses._200({
-          status: "success",
-          message: "Employer created successfully",
-          newEmployer,
-        });
+        callback(null, buildResponse(200, "Employer created successfully"));
       }
     }
-  } catch (e) {
-    console.error(e);
-    return Responses._500({
-      status: "error",
-      message: "An error occurred while creating the user or employer",
-    });
+  } catch (error) {
+    console.error("An error happened", error);
+    callback(error);
   }
 
   return event;
 };
+
+function buildResponse(statusCode, message) {
+  return {
+    statusCode: statusCode,
+    body: JSON.stringify({
+      status: statusCode >= 200 && statusCode < 300 ? "success" : "error",
+      message: message,
+    }),
+  };
+}
