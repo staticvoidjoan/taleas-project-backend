@@ -23,13 +23,13 @@ module.exports.lambdaTrigger = async (event) => {
           const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
           if (!nameRegEx.test(name)) {
-            console.log("Name contains invalid characters");
-            throw new Error("Name does not contain valid characters");
+            console.log("Name should be at least 2 characters long");
+            throw new Error("Name should be at least 2 characters long");
           }
 
           if (!nameRegEx.test(lastname)) {
-            console.log("Lastname contains invalid characters");
-            throw new Error("Lastname does not contain valid characters");
+            console.log("Lastname should be at least 2 characters long");
+            throw new Error("Lastname dshould be at least 2 characters long");
           }
 
           if (!emailRegEx.test(email)) {
@@ -57,12 +57,12 @@ module.exports.lambdaTrigger = async (event) => {
           var email = event.request.userAttributes["email"];
 
           // Add your validation logic here
-          const nameRegEx = /^[A-Za-z0-9\s. ']+$/;
+          const nameRegEx = /^[A-Za-z0-9\s. ']{3,30}+$/;
           const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
           if (!nameRegEx.test(companyName)) {
-            console.log("Company name contains invalid characters");
-            throw new Error("Company name does not contain valid characters");
+            console.log("Company name should be at least 3 characters long");
+            throw new Error("Company name should be at least 3 characteres long ");
           }
 
           if (!emailRegEx.test(email)) {
