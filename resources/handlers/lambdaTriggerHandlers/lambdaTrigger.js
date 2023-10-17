@@ -57,7 +57,7 @@ module.exports.lambdaTrigger = async (event) => {
           var email = event.request.userAttributes["email"];
 
           // Add your validation logic here
-          const nameRegEx = /^[A-Za-z0-9\s.]+$/;
+          const nameRegEx = /^[A-Za-z0-9\s. ']+$/;
           const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
           if (!nameRegEx.test(companyName)) {
