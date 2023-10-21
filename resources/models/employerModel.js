@@ -28,6 +28,10 @@ const EmployerSchema = new mongoose.Schema({
   maxPosts:{
     type: Number,
     required: false,
+  },
+  description:{
+    type: String,
+    max: 500
   }
 });
 
