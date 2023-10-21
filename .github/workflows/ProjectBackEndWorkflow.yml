@@ -54,4 +54,12 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'eu-west-3'
+      - name: Notify Slack Channel
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_ICON: https://t4.ftcdn.net/jpg/05/50/95/87/360_F_550958748_OeGcRonEUNoVhd0wjd9zSEMhLFIGO9Bt.jpg
+          SLACK_USERNAME: Joan's Backend Deployment Bot
+          SLACK_TITLE: Deploying On Main CloudFormation Stack
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
     
