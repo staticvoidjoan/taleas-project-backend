@@ -5,7 +5,7 @@ const History = require("../../models/historyModel");
 const Responses = require("../apiResponses");
 
 module.exports.likePost = async (event, context) => {
-  context.callbackWaitsForEmptyEventLoop = false;
+  // context.callbackWaitsForEmptyEventLoop = false;
   try {
     await connectDB();
 

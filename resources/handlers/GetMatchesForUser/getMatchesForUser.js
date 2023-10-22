@@ -21,6 +21,7 @@ module.exports.getMatchesForUser = async (event, context) => {
 
 
     }catch(error){
+        console.log(error);
         return Responses._500({
             status: "error",
             message: "An error occurred while getting the user",

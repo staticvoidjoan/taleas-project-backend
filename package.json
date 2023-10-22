@@ -11,15 +11,18 @@
   },
   "devDependencies": {
     "aws-cdk": "^2.96.1",
-    "jest": "^29.6.4"
+    "jest": "^29.7.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "^1.204.0",
+    "amazon-cognito-identity-js": "^6.3.6",
     "aws-cdk-lib": "2.96.1",
     "aws-sdk": "^2.1462.0",
     "constructs": "^10.0.0",
     "esbuild": "^0.19.3",
+    "mongodb-memory-server": "^9.0.1",
     "mongoose": "^7.5.2",
+    "node-fetch": "^3.3.2",
     "stripe": "^13.7.0"
   }
 }
