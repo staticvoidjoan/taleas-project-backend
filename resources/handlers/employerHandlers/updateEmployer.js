@@ -10,12 +10,12 @@ module.exports.updateEmployer = async (event) => {
 
   await connectDB();
   try {
-    const { address, industry, profilePhoto, description } = JSON.parse(event.body);
+    const { address, industry, description, profilePhoto } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
     const employer = await Employer.findOne({ _id: employerId });
-    console.log("Employer email", employerId);
+    console.log("Employer id", employerId);
 
     if (!employer) {
       console.log("Employer not found");
@@ -25,37 +25,8 @@ module.exports.updateEmployer = async (event) => {
       });
     }
 
-    if (!description) {
-      return Responses._400({
-        status: "error",
-        message: "Description is required.",
-      });
-    }
-
-    const words = description.split(/\s+/);
-    if (words.length > 500) {
-      return Responses._400({
-        status: "error",
-        message: "Description should be limited to 500 words or less.",
-      });
-    }
-
     const bucketName = "employerprofileimagebucket";
-    if (employer.profilePhoto !== undefined) {
-      const deleteParams = {
-        Bucket: bucketName,
-        Key: employer.profilePhoto,
-      };
-      try {
-        await s3.deleteObject(deleteParams).promise();
-      } catch (error) {
-        console.log(
-          "An error occurred while deleting the old image from s3",
-          error
-        );
-      }
-    }
-
+    console.log("Invoke function");
     const invokeParams = {
       FunctionName:
         "TaleasProjectBackendStack-UploadImageuploadImage1A-cxRbW8qlYfWs",
@@ -63,7 +34,8 @@ module.exports.updateEmployer = async (event) => {
     };
     const invokeResult = await lambda.invoke(invokeParams).promise();
     const uploadResult = JSON.parse(invokeResult.Payload);
-    console.log(uploadResult);
+    console.log("uploadResult:", uploadResult);
+    console.log("invokeResult:", invokeResult);
 
     const addressRegex = /^[A-Za-z0-9\s,.'-]+$/;
 
@@ -87,10 +59,28 @@ module.exports.updateEmployer = async (event) => {
       });
     }
 
+    if (!description || description.length < 10) {
+      console.log("Description is too short");
+      return Responses._400({
+        status: "error",
+        message:
+          "Description is too short. It should be at least 10 characters.",
+      });
+    }
+
+    if (description.length > 500) {
+      console.log("Description is too long");
+      return Responses._400({
+        status: "error",
+        message:
+          "Description is too long. It should be no more than 500 characters.",
+      });
+    }
+
     employer.address = address,
     employer.industry = industry,
-    employer.profilePhoto = uploadResult.body,
-    employer.description = description;
+    employer.description = description,
+    employer.profilePhoto = uploadResult.body;
 
     const newEmployer = await employer.save();
     console.log("Employer updated successfully", newEmployer);
