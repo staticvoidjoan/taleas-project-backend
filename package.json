@@ -17,8 +17,11 @@
     "@aws-cdk/aws-iam": "^1.204.0",
     "aws-cdk-lib": "2.96.1",
     "aws-sdk": "^2.1462.0",
+    "axios": "^1.5.1",
+    "bad-words": "^3.0.4",
     "constructs": "^10.0.0",
     "esbuild": "^0.19.3",
+    "fs": "^0.0.1-security",
     "mongoose": "^7.5.2",
     "stripe": "^13.7.0"
   }
