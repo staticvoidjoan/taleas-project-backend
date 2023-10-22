@@ -1,5 +1,6 @@
 const AWS = require('aws-sdk');
 const axios = require('axios'); 
+const Response = require("../apiResponses");
 
 async function getImageData(imageUrl) {
     try {
@@ -33,12 +34,9 @@ exports.handler = async (event, context) => {
             detectionStatus = "Bad";
         }
 
-        const response = {
-            statusCode: 200,
-            body: JSON.stringify({ status: detectionStatus })
-        };
+      
 
-        return response;
+        return Response._200(detectionStatus);
 
     } catch (error) {
         console.error('Error analyzing the image:', error);
