@@ -4,7 +4,7 @@ const Employer = require("../../models/employerModel");
 const mongoose = require("mongoose");
 const Responses = require("../apiResponses")
 module.exports.createPost = async (event, context) => {
-    context.callbackWaitsForEmptyEventLoop = false;
+    // context.callbackWaitsForEmptyEventLoop = false;
 
     await connectDB();
     try{

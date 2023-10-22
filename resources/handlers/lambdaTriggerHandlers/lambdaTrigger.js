@@ -17,22 +17,20 @@ module.exports.lambdaTrigger = async (event) => {
           var lastname = event.request.userAttributes["family_name"];
           var email = event.request.userAttributes["email"];
           var dateOfBirth = event.request.userAttributes["birthdate"];
-          
-         
-          // Add your validation logic here
+        
           const nameRegEx = /^[a-zA-Z\s]{2,30}$/;
-          const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           console.log("I AM A USER BEING REGISTERED");
           if (!nameRegEx.test(name)) {
             console.log("Name should be at least 2 characters long");
             throw new Error("Name should be at least 2 characters long");
           }
-
+          
           if (!nameRegEx.test(lastname)) {
             console.log("Lastname should be at least 2 characters long");
             throw new Error("Lastname dshould be at least 2 characters long");
           }
-
+          
+          const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegEx.test(email)) {
             console.log("Email is not valid");
             throw new Error("Email is not valid");
@@ -52,22 +50,19 @@ module.exports.lambdaTrigger = async (event) => {
 
           await user.save();
           console.log("User saved to the database", user);
-          console.log("Is mployee: ", isEmployee);
+          console.log("Is employee: ", isEmployee);
         } else {
           console.log("I AM A COMPANY BEING REGISTERED");
           var companyName = event.request.userAttributes["given_name"];
           var email = event.request.userAttributes["email"];
 
-          // Add your validation logic here
           const nameRegEx = /^[A-Za-z0-9\s. ']{3,30}$/;
-          const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
           if (!nameRegEx.test(companyName)) {
             console.log("Company name should be at least 3 characters long");
             throw new Error("Company name should be at least 3 characteres long ");
           }
-
+          
+          const emailRegEx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
           if (!emailRegEx.test(email)) {
             console.log("Email is not valid");
             throw new Error("Email is not valid");

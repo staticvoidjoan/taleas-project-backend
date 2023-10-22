@@ -10,7 +10,7 @@ module.exports.updateEmployer = async (event) => {
 
   await connectDB();
   try {
-    const { address, industry, profilePhoto } = JSON.parse(event.body);
+    const { address, industry, profilePhoto, description } = JSON.parse(event.body);
     console.log("Received data", event.body);
 
     const employerId = event.pathParameters.id;
@@ -22,6 +22,21 @@ module.exports.updateEmployer = async (event) => {
       return Responses._404({
         status: "error",
         message: "Employer is not found anywhere",
+      });
+    }
+
+    if (!description) {
+      return Responses._400({
+        status: "error",
+        message: "Description is required.",
+      });
+    }
+
+    const words = description.split(/\s+/);
+    if (words.length > 500) {
+      return Responses._400({
+        status: "error",
+        message: "Description should be limited to 500 words or less.",
       });
     }
 
@@ -74,7 +89,8 @@ module.exports.updateEmployer = async (event) => {
 
     employer.address = address,
     employer.industry = industry,
-    employer.profilePhoto = uploadResult.body
+    employer.profilePhoto = uploadResult.body,
+    employer.description = description;
 
     const newEmployer = await employer.save();
     console.log("Employer updated successfully", newEmployer);
