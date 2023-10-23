@@ -34,10 +34,51 @@ module.exports.getPostsByCategory = async (event, context) => {
             const posts = await Post.find(
             {category: category,
             _id: { $nin: [...likedPostIds, ...dislikedPostIds] }}).populate("creatorId").populate("category");
-            if (posts.length === 0) {
-                return Responses._404({message: "No posts found"})
+
+
+            //get users experience and general skills
+            const user = await User.findById(userId).populate("experience");
+            const userJobPositions = user.experience.map((exp) => exp.position) || [];
+            console.log(userJobPositions);
+            const userSkills = user.generalSkills || [];
+            console.log(userSkills);
+
+            //create regex for job positions and skills
+
+            const jobPositionRegex = userJobPositions.map((position) =>
+            new RegExp(position.split(/\s+/).map(escapeRegExp).join("|"), "i"));
+            const skillRegex = userSkills.map((skill) =>
+            new RegExp(skill.split(/\s+/).map(escapeRegExp).join("|"), "i"));
+
+            function escapeRegExp(text) {
+            return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
             }
-            return Responses._200({posts})
+
+            const postsWithScore = posts.map((post) => {
+                const positionMatch = jobPositionRegex.reduce(
+                  (matchCount, regex) =>
+                    matchCount + (post.position.match(regex) ? 1 : 0),
+                  0
+                );
+          
+                const skillMatch = skillRegex.reduce(
+                  (matchCount, regex) =>
+                    matchCount +
+                    (post.requirements.some((req) => req.match(regex)) ? 1 : 0),
+                  0
+                );
+          
+                return { post, score: positionMatch + skillMatch };
+              });
+          
+              postsWithScore.sort((a, b) => b.score - a.score);
+              const sortedPosts = postsWithScore.map((entry) => entry.post);
+          
+              if (sortedPosts.length === 0) {
+                return Responses._404({ message: "No posts found" });
+              }
+          
+            return Responses._200({sortedPosts})
             }catch(error) {
                 return Responses._500({message: "Internal server error"})
             }
