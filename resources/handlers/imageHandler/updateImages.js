@@ -13,6 +13,10 @@ module.exports.uploadImages = async (event) => {
   const BUCKET_NAME = event.bucketName;
 
   const img = event.profilePhoto;
+  if (!img || !img.includes(',')) {
+    console.log("Invalid or undefined profilePhoto");
+    return Responses._400({ message: "Invalid or undefined profilePhoto" });
+  }
   const buffer = Buffer.from(img.split(",")[1], "base64");
 
   const params = {
