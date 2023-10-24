@@ -13,7 +13,7 @@ module.exports.unmatchEmployee = async (event) => {
         const employeerId  = event.queryStringParameters.employeerId;
         const employeeId = event.queryStringParameters.employeeId;
 
-        const post = await Post.findOne({employeerId: employeerId});
+        const post = await Post.findOne({creatorId: employeerId});
 
         if(!post) {
             return Responses._404({
