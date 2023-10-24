@@ -1,10 +1,14 @@
 
 const Responses = require("../apiResponses");
 const Post = require("../../models/postModel");
+const {connectDB} = require("../../config/dbConfig");
+
 
 module.exports.unmatchEmployee = async (event) => {
 
     try {
+
+        await connectDB();
 
         const employeerId  = event.queryStringParameters.employeerId;
         const employeeId = event.queryStringParameters.employeeId;
