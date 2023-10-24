@@ -35,9 +35,10 @@ module.exports.createReport = async (event) => {
     }
 
     const existingReport = await Report.findOne({ reportedBy: reportedBy, userBeingReported: userBeingReported });
-    
+    let existingReportBool = false;
     if (existingReport) {
-      return Responses._400({ message: 'You have already reported this employer' });
+      existingReportBool = true;
+      return Responses._400({ message: 'You have already reported this employer', existingReport: existingReportBool });
     }
 
     if (!reportReason) {
