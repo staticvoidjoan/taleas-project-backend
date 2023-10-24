@@ -13,25 +13,32 @@ module.exports.unmatchEmployee = async (event) => {
         const employeerId  = event.queryStringParameters.employeerId;
         const employeeId = event.queryStringParameters.employeeId;
 
-        const post = await Post.findOne({employeerId: employeerId});
+        //find many posts that have the employeeId in the recLikes array and creator id as the employerId
 
-        if(!post) {
-            return Responses._404({
-                status: "error",
-                message: "Post is not found anywhere",
-            });
+        const posts = await Post.find({ creatorId: employeerId, recLikes: employeeId });
+        if(!posts) {
+            return Responses._400({message: "No posts found"});
         }
 
-        if(!post.recLikes.includes(employeeId)) {
-            return Responses._400({
-                status: "error",
-                message: "The user has not liked the post",
-            });
-        }
+        console.log(posts);
 
-        await Post.updateOne({ _id: post._id }, { $pull: { recLikes: employeeId } });
-        console.log("User removed from liked array successfully");
-        await post.save();
+        //remove the employeeId from the recLikes array
+        const updatedPosts = posts.map((post) => ({
+            ...post,
+            recLikes: post.recLikes.filter((id) => id !== employeeId),
+          }));
+
+        console.log(updatedPosts);
+
+
+          
+
+        return Responses._200({
+            status: "success",
+            message: "Employee unmatched successfully",
+        });
+
+        
 
     }catch(error) {
         console.error("Something went wrong", error);
