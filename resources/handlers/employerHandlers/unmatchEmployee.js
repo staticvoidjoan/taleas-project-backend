@@ -30,6 +30,9 @@ module.exports.unmatchEmployee = async (event) => {
 
         console.log(updatedPosts);
 
+        //save the updated posts
+        await Promise.all(updatedPosts.map((post) => post.save()));
+
 
           
 
