@@ -1,6 +1,6 @@
 
 const Responses = require("../apiResponses");
-const Post = require("../../models/Post");
+const Post = require("../../models/postModel");
 
 module.exports.unmatchEmployee = async (event) => {
 
