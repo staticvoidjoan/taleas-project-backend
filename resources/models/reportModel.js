@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const Report = new mongoose.Schema({
-    user: {
+    reportedBy: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "users"
     },
-    employer:{
+    userBeingReported:{
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: "Employer"
@@ -18,6 +18,7 @@ const Report = new mongoose.Schema({
     date: {
         type: Date,
         required: false,
+        default: Date.now(),
     }
 });
 

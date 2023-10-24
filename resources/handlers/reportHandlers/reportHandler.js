@@ -9,11 +9,11 @@ module.exports.createReport = async (event) => {
   await connectDB();
 
   try {
-    const { user, employer, reportReason } = JSON.parse(event.body);
-    console.log("Report Reason: ", reportReason);
+    const { reportedBy, userBeingReported, reportReason } = JSON.parse(event.body);
+    console.log("Event body: ", event.body);
 
-    const existingEmployer = await Employer.findById(employer);
-    console.log("Employer id", employer);
+    const existingEmployer = await Employer.findById(userBeingReported);
+    console.log("Employer id", userBeingReported);
 
     if (!existingEmployer) {
       console.log("Employer is not found anywhere");
@@ -23,8 +23,8 @@ module.exports.createReport = async (event) => {
       });
     }
 
-    const existingUser = await User.findById(user);
-    console.log("User id", user);
+    const existingUser = await User.findById(reportedBy);
+    console.log("User id", reportedBy);
 
     if (!existingUser) {
       console.log("User is not found anywhere");
@@ -34,7 +34,7 @@ module.exports.createReport = async (event) => {
       });
     }
 
-    const existingReport = await Report.findOne({ user: user, employer: employer });
+    const existingReport = await Report.findOne({ reportedBy: reportedBy, userBeingReported: userBeingReported });
     
     if (existingReport) {
       return Responses._400({ message: 'You have already reported this employer' });
@@ -45,10 +45,9 @@ module.exports.createReport = async (event) => {
     }
 
     const newReport = new Report({
-      user: user,
-      employer: employer,
+      reportedBy: reportedBy,
+      userBeingReported: userBeingReported,
       reportReason: reportReason,
-      date: Date.now()
     });
 
     await newReport.save();
