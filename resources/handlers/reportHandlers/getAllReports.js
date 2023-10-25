@@ -9,7 +9,8 @@ module.exports.getAllReports = async (event) => {
   try {
     const reports = Report.find({})
       .populate("reportedBy")
-      .populate("userBeingReported");
+      .populate("userBeingReported")
+      .lean();
 
     if (!reports) {
       console.log("No reports found");
@@ -21,7 +22,8 @@ module.exports.getAllReports = async (event) => {
 
     console.log("Reports fetched successfully");
 
-    return Responses._200({ reports });
+    return Responses._200({message: "Report retreived successfully", reports});
+
   } catch (error) {
     console.log("Error happened", error);
     return Responses._500({
