@@ -6,9 +6,10 @@ const {CognitoUserPoolUserStack} = require ("../lib/employee-userpool")
 const {ContentStack} = require("../lib/content-stack.js");
 const app = new cdk.App();
 const eu2 = {region: "eu-west-2",}
-const cognitoUserPool = new CognitoUserPoolUserStack(app, "CognitoUserPoolUserStack")
+const eu3 = {region: "eu-west-3",}
+const cognitoUserPool = new CognitoUserPoolUserStack(app, "CognitoUserPoolUserStack",{env: eu3})
 new TaleasProjectBackendStack(app, 'TaleasProjectBackendStack', {
-    cognitoUserPool: cognitoUserPool 
+    cognitoUserPool: cognitoUserPool , env: eu3
 });
 new ContentStack(app,"CareerCrushContentStack",{env: eu2});
 
