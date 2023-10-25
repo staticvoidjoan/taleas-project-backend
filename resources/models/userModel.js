@@ -40,7 +40,11 @@ const User = mongoose.model(
     }],
     profilePhoto: {
         type: String,
-    }
+    },
+    blockedCompanies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Employer'
+    }]
   })
 );
 

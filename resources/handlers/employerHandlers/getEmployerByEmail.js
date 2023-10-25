@@ -9,9 +9,7 @@ module.exports.getEmployerByEmail = async (event) => {
   await connectDB();
   try {
     const employerEmail = event.pathParameters.email;
-    const employer = await Employer.findOne({ email: employerEmail }).select(
-      "-__v"
-    );
+    const employer = await Employer.findOne({ email: employerEmail }).select("-__v");
 
     if (!employer) {
       console.log("Employer not found");

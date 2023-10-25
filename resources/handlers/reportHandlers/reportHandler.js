@@ -53,7 +53,12 @@ module.exports.createReport = async (event) => {
 
     await newReport.save();
 
+    existingUser.blockedCompanies.push(userBeingReported);
+    await existingUser.save();
+    console.log("Company has been blocked");
+    
     return Responses._200({ message: 'Report submitted successfully' });
+
 
   } catch (error) {
     console.log("An error happened: ", error);

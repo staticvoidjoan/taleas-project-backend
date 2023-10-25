@@ -17,7 +17,7 @@ module.exports.getAllPostsForAUser = async (event, context) => {
     const likedPostIds = userHistory?.likedPosts || [];
     const dislikedPostIds = userHistory?.dislikedPosts || [];
 
-    const user = await User.findById(userId).populate("experience");
+    const user = await User.findById(userId).populate("experience").populate("blockedCompanies");
     console.log(user);
     const userJobPositions = user.experience.map((exp) => exp.position) || [];
     console.log(userJobPositions);
@@ -37,6 +37,7 @@ module.exports.getAllPostsForAUser = async (event, context) => {
 
     const allPosts = await Post.find({
       _id: { $nin: [...likedPostIds, ...dislikedPostIds] },
+      creatorId: {$nin: user.blockedCompanies},
     })
       .populate("likedBy")
       .populate("recLikes")
