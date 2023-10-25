@@ -9,9 +9,7 @@ module.exports.getAllReports = async (event) => {
   try {
     const reports = Report.find({})
       .populate("reportedBy")
-      .populate("userBeingReported")
-      .populate("reportReason")
-      .populate("date");
+      .populate("userBeingReported");
 
     if (!reports) {
       console.log("No reports found");
