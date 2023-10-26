@@ -61,5 +61,6 @@ jobs:
           SLACK_USERNAME: Joan's Backend Deployment Bot
           SLACK_TITLE: Deploying On Main CloudFormation Stack
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-
+          SLACK_COLOR: ${{ job.status }}
+        if: always()
     
