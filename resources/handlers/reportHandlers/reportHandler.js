@@ -43,6 +43,8 @@ module.exports.createReport = async (event) => {
       });
     }
 
+
+
     existingEmployer.reportCount += 1;
     await existingEmployer.save();
 

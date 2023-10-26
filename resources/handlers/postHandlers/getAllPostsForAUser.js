@@ -1,11 +1,12 @@
 const { connectDB } = require("../../config/dbConfig");
 const Post = require("../../models/postModel");
 const History = require("../../models/historyModel");
-const Category = require("../../models/categoryModel");
 const User = require("../../models/userModel");
-const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
-const Experience = require("../../models/experienceModel");
+const Experience = require('../../models/experienceModel');
+const Employer = require('../../models/employerModel');
+const Category = require('../../models/categoryModel');
+
 module.exports.getAllPostsForAUser = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   await connectDB();
@@ -35,9 +36,11 @@ module.exports.getAllPostsForAUser = async (event, context) => {
       return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     }
 
+    const blockedCompanyIds = user.blockedCompanies.map((company) => company._id);
+
     const allPosts = await Post.find({
       _id: { $nin: [...likedPostIds, ...dislikedPostIds] },
-      creatorId: { $nin: user.blockedCompanies },
+      creatorId: { $nin: blockedCompanyIds },
     }).populate("likedBy")
       .populate("recLikes")
       .populate("category")
@@ -67,10 +70,9 @@ module.exports.getAllPostsForAUser = async (event, context) => {
       return Responses._404({ message: "No posts found" });
     }
 
-    // Return the sorted posts directly, without an extra object wrapper
     return Responses._200(sortedPosts);
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);
     return Responses._500({ message: "Internal server error" });
   }
 };
