@@ -1,6 +1,7 @@
 const connectDB = require("../../config/dbConfig");
 const Employer = require("../../models/employerModel");
 const Responses = require("../apiResponses");
+const Report = require("../../models/reportModel");
 
 module.exports.deleteEmployer = async (event) => {
   console.log("Lambda fucntion invoked");
@@ -19,7 +20,11 @@ module.exports.deleteEmployer = async (event) => {
       });
     }
 
-    console.log("Employer deleted successfully");
+    await Report.deleteMany({ userBeingReported: employerId });
+
+    console.log(
+      "Employer and associated reports have been deleted successfully"
+    );
 
     return Responses._200({
       status: "success",

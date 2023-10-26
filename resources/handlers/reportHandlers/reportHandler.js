@@ -9,7 +9,9 @@ module.exports.createReport = async (event) => {
   await connectDB();
 
   try {
-    const { reportedBy, userBeingReported, reportReason } = JSON.parse(event.body);
+    const { reportedBy, userBeingReported, reportReason } = JSON.parse(
+      event.body
+    );
     console.log("Event body: ", event.body);
 
     const existingEmployer = await Employer.findById(userBeingReported);
@@ -20,6 +22,13 @@ module.exports.createReport = async (event) => {
       return Responses._404({
         status: "error",
         message: "Employer is not found anywhere",
+      });
+    }
+
+    if (existingEmployer.reportCount >= 10) {
+      return Responses._400({
+        message:
+          "This company has been reported more than 10 times! Take actions now!",
       });
     }
 
@@ -34,15 +43,24 @@ module.exports.createReport = async (event) => {
       });
     }
 
-    const existingReport = await Report.findOne({ reportedBy: reportedBy, userBeingReported: userBeingReported });
+    existingEmployer.reportCount += 1;
+    await existingEmployer.save();
+
+    const existingReport = await Report.findOne({
+      reportedBy: reportedBy,
+      userBeingReported: userBeingReported,
+    });
+
     let existingReportBool = false;
     if (existingReport) {
       existingReportBool = true;
-      return Responses._400({ message: 'You have already reported this employer'});
+      return Responses._400({
+        message: "You have already reported this employer",
+      });
     }
 
     if (!reportReason) {
-      return Responses._400({ message: 'Report reason is required' });
+      return Responses._400({ message: "Report reason is required" });
     }
 
     const newReport = new Report({
@@ -56,10 +74,8 @@ module.exports.createReport = async (event) => {
     existingUser.blockedCompanies.push(userBeingReported);
     await existingUser.save();
     console.log("Company has been blocked");
-    
-    return Responses._200({ message: 'Report submitted successfully' });
 
-
+    return Responses._200({ message: "Report submitted successfully" });
   } catch (error) {
     console.log("An error happened: ", error);
     return Responses._500({
