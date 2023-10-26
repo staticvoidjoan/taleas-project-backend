@@ -1,31 +1,24 @@
-const { connectDB } = require("../../config/dbConfig");
+const {connectDB} = require("../../config/dbConfig");
 const Report = require("../../models/reportModel");
-const Responses = require("../../handlers/apiResponses");
+const Response = require("../../handlers/apiResponses");
+const User = require('../../models/userModel');
+const Employer = require('../../models/employerModel');
 
 module.exports.getAllReports = async (event) => {
   console.log("Lambda function invoked");
   await connectDB();
 
   try {
-    const reports = Report.find({})
-      .populate("reportedBy")
-      .populate("userBeingReported");
+    const reports = await Report.find()
+      .populate("reportedBy", "name lastname email")
+      .populate("userBeingReported", "companyName email");
+    console.log("Reports: ", reports);
 
-    if (!reports) {
-      console.log("No reports found");
-      return Responses._404({
-        status: "error",
-        message: "No reports found",
-      });
-    }
-
-    console.log("Reports fetched successfully");
-
-    return Responses._200({ reports });
+    return Response._200({ message: "Reports retreived successfully", reports});
   } catch (error) {
     console.log("Error happened", error);
-    return Responses._500({
-      message: "Something bad happened check the logs for more information",
+    return Response._500({
+      message: "An error happened check the logs for more",
     });
   }
 };

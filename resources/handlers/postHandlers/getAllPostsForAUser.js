@@ -37,9 +37,8 @@ module.exports.getAllPostsForAUser = async (event, context) => {
 
     const allPosts = await Post.find({
       _id: { $nin: [...likedPostIds, ...dislikedPostIds] },
-      creatorId: {$nin: user.blockedCompanies},
-    })
-      .populate("likedBy")
+      creatorId: { $nin: user.blockedCompanies },
+    }).populate("likedBy")
       .populate("recLikes")
       .populate("category")
       .populate("creatorId");

@@ -19,7 +19,11 @@ const Report = new mongoose.Schema({
         type: Date,
         required: false,
         default: Date.now(),
-    }
+    },
+    reportCount: {
+        type: Number,
+        deafult: 0,
+    },
 });
 
 module.exports = mongoose.model("report", Report);

@@ -32,7 +32,11 @@ const EmployerSchema = new mongoose.Schema({
   description:{
     type: String,
     max: 500
-  }
+  },
+  reportCount: {
+    type: Number,
+    default: 0
+  },
 });
 
 // EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
