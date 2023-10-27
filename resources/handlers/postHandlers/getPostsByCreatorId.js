@@ -32,6 +32,9 @@ module.exports.getPostsByCreatorId = async (event, context) => {
         .populate("category")
         .populate("creatorId");
   
+      const count = await Post.countDocuments({creatorId: creatorId});
+      const pageCount = Math.ceil(count / limit);
+      
       if(posts.length === 0) {
         return Responses._404({message: "No posts found"})
       }
