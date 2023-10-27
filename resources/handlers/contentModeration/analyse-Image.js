@@ -60,6 +60,14 @@ exports.handler = async (event, context) => {
     const moderationLabels = moderationLabelsResponse.ModerationLabels;
     let detectionStatus = "Good";
 
+    const textDetectionResponse = await rekognition.detectText(rekognitionParams).promise();
+
+    if (textDetectionResponse.TextDetections.length > 0) {
+      console.log("Text detected in the image.");
+      console.log("Detected text: ", textDetectionResponse.TextDetections);
+      // You can process or return the detected text as needed.
+    }
+
     if (moderationLabels && moderationLabels.length > 0) {
       console.log("Bad Image detected");
       detectionStatus = "Bad";
@@ -84,6 +92,8 @@ exports.handler = async (event, context) => {
     return Response._200({
       detectionStatus: detectionStatus,
       isImageDeleted: isImageDeleted,
+      detectText: textDetectionResponse.TextDetections,
+      textDetectionResponse: textDetectionResponse
     });
   } catch (error) {
     console.error("Error analyzing the image:", error);
