@@ -37,6 +37,10 @@ const EmployerSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  blockedUsers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users'
+}]
 });
 
 // EmployerSchema.methods.isSubscriptionExpired = function() { // Add this method
