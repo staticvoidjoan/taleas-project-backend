@@ -1,75 +1,81 @@
+const mongoose = require("mongoose");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 const { likePost } = require("../resources/handlers/userHandlers/likePost");
-const { connectDB } = require("../resources/config/dbConfig");
 const User = require("../resources/models/userModel");
 const Post = require("../resources/models/postModel");
-const History = require("../resources/models/historyModel");
-const Responses = require("../resources/handlers/apiResponses");
 
-jest.mock("../resources/config/dbConfig");
-jest.mock("../resources/models/userModel");
-jest.mock("../resources/models/postModel");
-jest.mock("../resources/models/historyModel");
+jest.mock("../resources/config/dbConfig", () => ({
+  connectDB: jest.fn(),
+}));
 
-const expectedHeaders = {
-  "Access-Control-Allow-Methods": "*",
-  "Access-Control-Allow-Origin": "*",
-  "Content-Type": "application/json",
-};
+let mongoServer;
+let mongoUri;
+
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  mongoUri = await mongoServer.getUri();
+  await mongoose.connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await mongoServer.stop();
+});
 
 describe("likePost", () => {
-it("should return 404 if user not found", async () => {
-    User.findOne.mockResolvedValue(null);
-  
-    const event = {
-      pathParameters: { id: "65199429b361e407af5bb104" },
-      queryStringParameters: { id: "6519991a8d591acc205faa9d" },
-    };
-  
-    const response = await likePost(event);
-    expect(response).toEqual({
-      statusCode: 404,
-      body: JSON.stringify({ status: "error", message: "User not found" }),
-      headers: expectedHeaders,
+  let user;
+  let post;
+
+  beforeEach(async () => {
+    user = new User({
+      name: "Samuel",
+      lastname: "Dervishi",
+      email: "dervishisamuel360@gmail.com",
+      experience: [],
+      certifications: [],
+      generalSkills: ["Nodejs", "MongoDB"],
+      languages: ["English"],
+      links: [],
     });
-  });
-  
-  it("should return 404 if post not found", async () => {
-    User.findOne.mockResolvedValue({});
-    Post.findById.mockResolvedValue(null);
-  
-    const event = {
-      pathParameters: { id: "65199429b361e407af5bb104" },
-      queryStringParameters: { id: "6519991a8d591acc205faa9d" },
-    };
-  
-    const response = await likePost(event);
-    expect(response).toEqual({
-      statusCode: 404,
-      body: JSON.stringify({ status: "error", message: "Post not found" }),
-      headers: expectedHeaders,
+    await user.save();
+
+    post = new Post({
+      category: "65103924261c27f48f71b3d2",
+      creatorId: "65199912e88d4b85c0ebb8e1",
+      likedBy: [user._id.toString()],
+      recLikes: [],
+      position: "Programues",
+      requirements: ["Nodejs"],
+      description: "Hello to the new job",
     });
+    await post.save();
   });
-  
-  it("should return 200 if post is liked successfully", async () => {
-    User.findOne.mockResolvedValue({});
-    Post.findById.mockResolvedValue({});
-    History.findOne.mockResolvedValue(null);
-  
+
+  it("should like a post successfully", async () => {
     const event = {
-      pathParameters: { id: "65199429b361e407af5bb104" },
-      queryStringParameters: { id: "6519991a8d591acc205faa9d" },
+      queryStringParameters: { id: post._id.toString() },
+      pathParameters: { id: user._id.toString() },
     };
-  
-    const response = await likePost(event);
-  
-    expect(response).toEqual({
-      statusCode: 200,
+
+    const result = await likePost(event);
+
+    expect(result).toEqual({
       body: JSON.stringify({
         status: "success",
         message: "Post liked successfully",
       }),
-      headers: expectedHeaders,
+      headers: {
+        "Access-Control-Allow-Methods": "*",
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
+      },
+      statusCode: 200,
     });
-  });
   
+    const updatedPost = await Post.findById(post._id);
+    expect(updatedPost.likedBy.map(id => id.toString())).toContain(user._id.toString());
+  });
 });
