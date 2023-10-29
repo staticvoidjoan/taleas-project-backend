@@ -1,6 +1,7 @@
-const { connectDB } = require("../../config/dbConfig");
+const Employer = require('../../models/employerModel');
 const Report = require("../../models/reportModel");
 const Responses = require("../../handlers/apiResponses");
+const {connectDB} = require('../../config/dbConfig');
 
 module.exports.deleteReport = async (event) => {
   console.log("Lambda function invoked");
@@ -10,16 +11,19 @@ module.exports.deleteReport = async (event) => {
     const reportId = event.pathParameters.id;
     console.log("Report id: ", reportId);
 
-    const deletedReport = await Report.findByIdAndRemove(reportId);
-
-    if (!deletedReport) {
+    const report = await Report.findById(reportId);
+    if (!report) {
       return Responses._404({ status: "error", message: "Report not found" });
     }
 
-    console.log("Report successfully deleted");
+    await Employer.findByIdAndRemove(report.userBeingReported);
+
+    const deletedReport = await Report.findByIdAndRemove(reportId);
+
+    console.log("Report and company successfully deleted");
 
     return Responses._200({
-      message: "Report deleted successfully",
+      message: "Report and company deleted successfully",
       deletedReport,
     });
   } catch (error) {
