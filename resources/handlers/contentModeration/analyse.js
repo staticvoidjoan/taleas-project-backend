@@ -37,13 +37,16 @@ exports.handler = async (event) => {
     const languageDetectionResult = await Comprehend.detectDominantLanguage(
       languageDetectionParams
     ).promise();
+
     const detectedLanguage = languageDetectionResult.Languages[0].LanguageCode;
+    console.log("LanguageDetectionResult", detectedLanguage);
     if (detectedLanguage != "en") {
       // If not English, translate
       const translationResult = await Translate.translateText(
         translationParams
       ).promise();
       translatedText = translationResult.TranslatedText; // Update translatedText
+      console.log("TRanslationResult", translationResult)
       console.log("Normal text", text);
       console.log("Translated text", translatedText);
     }
